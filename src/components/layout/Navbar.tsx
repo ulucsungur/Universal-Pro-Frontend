@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { LogOut } from 'lucide-react'; // İkon ekledik
 
 export const Navbar = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth(); // logout fonksiyonunu çektik
 
   return (
     <header className="h-20 border-b border-white/5 flex items-center px-10 justify-between sticky top-0 bg-[#020617]/80 backdrop-blur-xl z-50">
@@ -14,18 +15,29 @@ export const Navbar = () => {
       </Link>
 
       {user ? (
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-bold uppercase text-purple-400">
-            {user.fullName}
-          </span>
-          {user.avatarUrl && (
-            <img
-              src={user.avatarUrl}
-              className="w-8 h-8 rounded-full border border-purple-600 object-cover"
-              alt="profil"
-              referrerPolicy="no-referrer" // 👈 BU SATIRI EKLE (Google resimleri için ŞART)
-            />
-          )}
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] font-black uppercase tracking-widest text-purple-400">
+              {user.fullName}
+            </span>
+            {user.avatarUrl && (
+              <img
+                src={user.avatarUrl}
+                className="w-8 h-8 rounded-full border border-purple-600 object-cover"
+                alt="profil"
+                referrerPolicy="no-referrer"
+              />
+            )}
+          </div>
+
+          {/* 🚀 ÇIKIŞ BUTONU */}
+          <button
+            onClick={logout}
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-400 transition-all border-l border-white/10 pl-6"
+          >
+            <LogOut size={14} />
+            Çıkış
+          </button>
         </div>
       ) : (
         <Link
