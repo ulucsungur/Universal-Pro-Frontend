@@ -19,3 +19,13 @@ export interface Category {
   slug: string;
   imageUrl?: string;
 }
+
+export interface Listing {
+  id: number;
+  title: string;
+  description?: string;
+  price: string | number;
+  imageUrls: string[];
+  currency: string;
+  createdAt: string;
+}

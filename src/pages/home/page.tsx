@@ -1,19 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-
-interface Category {
-  id: number;
-  title: string;
-  imageUrl?: string;
-}
-
-interface Listing {
-  id: number;
-  title: string;
-  description?: string;
-  price: string | number;
-  currency: string;
-}
+import { Link } from 'react-router-dom';
+import type { Category } from '../../types/auth';
+import type { Listing } from '../../types/auth';
 
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -69,30 +58,55 @@ export default function HomePage() {
           Sizin İçin <span className="text-purple-600">Seçtiklerimiz</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {listings.map((item) => (
-            <div
-              key={item.id}
-              className="bg-[#0f172a] p-6 rounded-[32px] border border-white/5 hover:border-purple-500/30 transition-all group"
-            >
-              <div className="aspect-square rounded-2xl overflow-hidden mb-6 bg-slate-800 flex items-center justify-center text-slate-600 italic text-xs">
-                Görsel Gelecek
+          {listings.map((item: Listing) => {
+            // Tipi belirttik
+            // İlk resmi güvenli bir şekilde alıyoruz
+            const hasImages = item.imageUrls && item.imageUrls.length > 0;
+            const mainImage = hasImages ? item.imageUrls[0] : null;
+
+            return (
+              <div
+                key={item.id}
+                className="bg-[#0f172a] p-6 rounded-4xl border border-white/5 hover:border-purple-500/30 transition-all group flex flex-col"
+              >
+                {/* GÖRSEL ALANI */}
+                <div className="aspect-square rounded-2xl overflow-hidden mb-6 bg-slate-800 flex items-center justify-center border border-white/5 relative">
+                  {mainImage ? (
+                    <img
+                      src={mainImage}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center opacity-20">
+                      <span className="text-slate-600 italic text-[10px] font-black uppercase tracking-widest">
+                        Görsel Yok
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* BİLGİ ALANI */}
+                <h3 className="font-bold text-lg uppercase mb-2 truncate text-white italic">
+                  {item.title}
+                </h3>
+                <p className="text-slate-400 text-sm mb-6 line-clamp-2 leading-relaxed">
+                  {item.description}
+                </p>
+
+                <div className="flex justify-between items-center mt-auto pt-4 border-t border-white/5">
+                  <span className="text-2xl font-black text-purple-400">
+                    {Number(item.price).toLocaleString('tr-TR')} ₺
+                  </span>
+                  <Link to={`/listing/${item.id}`}>
+                    <button className="bg-white text-black p-3 rounded-xl hover:bg-purple-600 hover:text-white transition-all cursor-pointer shadow-lg active:scale-90">
+                      →
+                    </button>
+                  </Link>
+                </div>
               </div>
-              <h3 className="font-bold text-lg uppercase mb-2 truncate">
-                {item.title}
-              </h3>
-              <p className="text-slate-400 text-sm mb-6 line-clamp-2">
-                {item.description}
-              </p>
-              <div className="flex justify-between items-center">
-                <span className="text-2xl font-black text-purple-400">
-                  {Number(item.price).toLocaleString()} ₺
-                </span>
-                <button className="bg-white text-black p-3 rounded-xl hover:bg-purple-600 hover:text-white transition-all">
-                  →
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
     </main>
