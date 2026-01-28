@@ -12,3 +12,10 @@ export interface AuthContextType {
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
 }
+
+export interface Category {
+  id: number;
+  title: string;
+  slug: string;
+  imageUrl?: string;
+}
