@@ -1,8 +1,9 @@
+export type UserRole = 'admin' | 'agent' | 'user';
 export interface User {
   id: number;
   fullName: string;
   email: string;
-  role: 'admin' | 'agent' | 'user';
+  role: UserRole;
   avatarUrl?: string;
 }
 
@@ -15,17 +16,25 @@ export interface AuthContextType {
 
 export interface Category {
   id: number;
-  title: string;
+  titleTr: string;
+  titleEn: string;
   slug: string;
   imageUrl?: string;
+  parentId?: number | null;
+  subCount?: number;
 }
 
 export interface Listing {
   id: number;
   title: string;
-  description?: string;
-  price: string | number;
-  imageUrls: string[];
+  titleTr?: string; // 🚀 Dile göre opsiyonel alanlar
+  titleEn?: string;
+  description: string;
+  descriptionTr?: string;
+  descriptionEn?: string;
+  price: number | string;
   currency: string;
+  imageUrls?: string[]; // 🚀 Opsiyonel yaptık (resimsiz ilan olabilir)
+  categoryId: number;
   createdAt: string;
 }

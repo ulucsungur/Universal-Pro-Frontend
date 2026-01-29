@@ -1,0 +1,81 @@
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      tr: {
+        translation: {
+          login: 'Giriş Yap',
+          logout: 'Çıkış Yap',
+          add_listing: 'İlan Ver',
+          new_listing_title1: 'YENİ',
+          new_listing_title2: 'İLAN YAYINLA',
+          mrktplace: ' MARKETPLACE / İLAN YÖNETİMİ',
+          image_mgmt: 'GÖRSEL YÖNETİMİ',
+          listing_title: 'İLAN BAŞLIĞI',
+          mainimagenotselected: 'ANA GÖRSEL HENÜZ SEÇİLMEDİ',
+          hint: ' İlk seçtiğiniz resim ilanınızın kapak görseli olacaktır.',
+          saleprice: 'SATIŞ FİYATI',
+          plcholderproductdetail: 'Ürününüzün tüm detaylarını buraya girin...',
+          plcholderaddtitle: 'Örn: Sahibinden Tertemiz Araba...',
+          description: 'AÇIKLAMA',
+          price: 'SATIŞ FİYATI',
+          currency: 'PARA BİRİMİ',
+          loading: 'Yükleniyor...',
+          publish_btn: 'İLANİ RESMEN YAYINLA',
+          listing_detail: 'İLAN DETAYI',
+          contact_seller: 'SATICIYLA İLETİŞİME GEÇ',
+          image_placeholder: 'ANA GÖRSEL HENÜZ SEÇİLMEDİ',
+          categories_title: 'KATEGORİLERİ KEŞFET',
+          picked_for_you: 'SİZİN İÇİN SEÇTİKLERİMİZ',
+          noimage: 'Görsel Yok',
+          all_departments: 'TÜM KATEGORİLER',
+          back_to_main: 'ANA MENÜYE DÖN',
+          hello: 'Merhaba',
+          sign_in: 'Giriş Yap',
+          menu_title: 'Market Menüsü',
+        },
+      },
+      en: {
+        translation: {
+          login: 'Sign In',
+          logout: 'Log Out',
+          add_listing: 'Post Ad',
+          new_listing_title1: 'POST',
+          new_listing_title2: 'NEW AD',
+          mrktplace: ' MARKETPLACE / ADD MANAGEMENT',
+          image_mgmt: 'IMAGE MANAGEMENT',
+          listing_title: 'AD TITLE',
+          mainimagenotselected: 'MAIN IMAGE NOT SELECTED',
+          hint: ' Tip: The first image you select will be the cover image of your ad.',
+          saleprice: 'SALE PRICE',
+          plcholderproductdetail: 'Enter all details of your product here...',
+          plcholderaddtitle: 'Example: Immaculate Car from Owner...',
+          description: 'DESCRIPTION',
+          price: 'PRICE',
+          currency: 'CURRENCY',
+          loading: 'Loading...',
+          publish_btn: 'PUBLISH AD NOW',
+          listing_detail: 'AD DETAILS',
+          contact_seller: 'CONTACT SELLER',
+          image_placeholder: 'MAIN IMAGE NOT SELECTED',
+          categories_title: 'EXPLORE CATEGORIES',
+          picked_for_you: 'PICKED FOR YOU',
+          noimage: 'No Image',
+          all_departments: 'ALL DEPARTMENTS',
+          back_to_main: 'BACK TO MAIN MENU',
+          hello: 'Hello',
+          sign_in: 'Sign In',
+          menu_title: 'Market Menu',
+        },
+      },
+    },
+    fallbackLng: 'tr',
+    interpolation: { escapeValue: false },
+  });
+
+export default i18n;

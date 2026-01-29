@@ -2,9 +2,11 @@ import { useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Camera, X, LayoutGrid, Info, Tag } from 'lucide-react';
 
 export default function AddListingPage() {
+  const { t } = useTranslation();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -60,10 +62,14 @@ export default function AddListingPage() {
           </div>
           <div>
             <h1 className="text-4xl font-black uppercase tracking-tighter italic">
-              Yeni <span className="text-purple-600">İlan Yayınla</span>
+              {t('new_listing_title1')}
+              <span className="text-purple-600">
+                {' '}
+                {t('new_listing_title2')}
+              </span>
             </h1>
             <p className="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">
-              Marketplace / İlan Yönetimi
+              {t('mrktplace')}
             </p>
           </div>
         </div>
@@ -78,7 +84,7 @@ export default function AddListingPage() {
               <div className="flex items-center gap-2 mb-2">
                 <Camera size={18} className="text-purple-500" />
                 <h3 className="text-sm font-black uppercase tracking-widest text-slate-300">
-                  Görsel Yönetimi
+                  {t('image_mgmt')}
                 </h3>
               </div>
 
@@ -92,7 +98,7 @@ export default function AddListingPage() {
                   />
                 ) : (
                   <p className="text-slate-600 text-xs font-bold uppercase italic">
-                    Ana Görsel Henüz Seçilmedi
+                    {t('mainimagenotselected')}
                   </p>
                 )}
               </div>
@@ -132,7 +138,7 @@ export default function AddListingPage() {
                 )}
               </div>
               <p className="text-[10px] text-slate-500 italic leading-relaxed text-center">
-                İpucu: İlk seçtiğiniz resim ilanınızın kapak görseli olacaktır.
+                {t('hint')}
               </p>
             </div>
           </div>
@@ -144,27 +150,27 @@ export default function AddListingPage() {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic">
-                    <Info size={12} /> İlan Başlığı
+                    <Info size={12} /> {t('listing_title')}
                   </label>
                   <input
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
-                    placeholder="Örn: Sahibinden Tertemiz Araba..."
+                    placeholder={t('plcholderaddtitle')}
                     className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl focus:border-purple-600 outline-none text-base transition-all"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic">
-                    Açıklama
+                    {t('description')}
                   </label>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
                     rows={6}
-                    placeholder="Ürününüzün tüm detaylarını buraya yazın..."
+                    placeholder={t('plcholderproductdetail')}
                     className="w-full bg-white/5 border border-white/10 p-5 rounded-2xl focus:border-purple-600 outline-none text-base resize-none transition-all"
                   />
                 </div>
@@ -174,7 +180,7 @@ export default function AddListingPage() {
               <div className="grid grid-cols-2 gap-8 pt-4">
                 <div className="space-y-2">
                   <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic">
-                    <Tag size={12} /> Satış Fiyatı
+                    <Tag size={12} /> {t('saleprice')}
                   </label>
                   <input
                     type="number"
@@ -187,7 +193,7 @@ export default function AddListingPage() {
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic ml-2">
-                    Para Birimi
+                    {t('currency')}
                   </label>
                   <select
                     value={currency}
@@ -207,7 +213,7 @@ export default function AddListingPage() {
                 disabled={isSubmitting}
                 className="w-full bg-purple-600 hover:bg-purple-700 py-6 rounded-3xl font-black uppercase tracking-[0.3em] text-xs transition-all transform active:scale-95 shadow-xl shadow-purple-600/20 disabled:opacity-50"
               >
-                {isSubmitting ? 'Uçağa Yükleniyor...' : 'İlanı Resmen Yayınla'}
+                {isSubmitting ? t('loading') : t('publish_btn')}
               </button>
             </div>
           </div>
