@@ -22,6 +22,7 @@ export default function CategoryPage() {
         const res = await axios.get(
           `http://localhost:5000/api/category/${slug}/listings`,
         );
+        console.log('Gelen İlanlar:', res.data.listings);
         setListings(res.data.listings || []);
         setCategory(res.data.category || null);
       } catch (err) {
