@@ -27,14 +27,16 @@ export interface Category {
 export interface Listing {
   id: number;
   title: string;
-  titleTr?: string; // 🚀 Dile göre opsiyonel alanlar
+  titleTr?: string;
   titleEn?: string;
   description: string;
   descriptionTr?: string;
   descriptionEn?: string;
   price: number | string;
   currency: string;
-  imageUrls?: string[]; // 🚀 Opsiyonel yaptık (resimsiz ilan olabilir)
+  imageUrls: string[];
   categoryId: number;
+  specs: Record<string, string | number | boolean | null>;
+  sellerId?: number;
   createdAt: string;
 }

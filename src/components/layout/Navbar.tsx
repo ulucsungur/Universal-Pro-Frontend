@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { LogOut, PlusCircle, Globe } from 'lucide-react'; // Globe ikonu ekledik
 import { SubNavbar } from './SubNavbar';
 import { useTranslation } from 'react-i18next'; // 🚀 i18n hook'u
-import { Sidedrawer } from './SideDrawer';
+import { Sidedrawer } from './Sidedrawer';
 import { useState } from 'react';
 
 export const Navbar = () => {
@@ -41,13 +41,22 @@ export const Navbar = () => {
 
           {/* 🚀 2. İLAN VER BUTONU */}
           {isAuthorized && (
-            <Link
-              to="/add-listing"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95 no-underline"
-            >
-              <PlusCircle size={16} />
-              {t('add_listing')} {/* 🚀 Çeviriden geliyor */}
-            </Link>
+            <>
+              <Link
+                to="/admin/add-category"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95 no-underline"
+              >
+                <PlusCircle size={16} />
+                {t('addcategory')} {/* 🚀 Çeviriden geliyor */}
+              </Link>
+              <Link
+                to="/add-listing"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95 no-underline"
+              >
+                <PlusCircle size={16} />
+                {t('add_listing')} {/* 🚀 Çeviriden geliyor */}
+              </Link>
+            </>
           )}
 
           {/* 🚀 3. KULLANICI ALANI */}
