@@ -40,3 +40,14 @@ export interface Listing {
   sellerId?: number;
   createdAt: string;
 }
+
+export interface Banner {
+  id: number;
+  titleTr: string;
+  titleEn: string;
+  subtitleTr?: string;
+  subtitleEn?: string;
+  imageUrl: string;
+  link: string;
+  order: number;
+}
