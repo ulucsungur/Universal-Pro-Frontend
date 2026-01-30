@@ -1,17 +1,11 @@
-export type UserRole = 'admin' | 'agent' | 'user';
+// frontend/src/types/auth.ts
+
 export interface User {
   id: number;
   fullName: string;
   email: string;
-  role: UserRole;
+  role: 'admin' | 'agent' | 'user';
   avatarUrl?: string;
-}
-
-export interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  login: (email: string, pass: string) => Promise<void>;
-  logout: () => Promise<void>;
 }
 
 export interface Category {
@@ -34,12 +28,22 @@ export interface Listing {
   descriptionEn?: string;
   price: number | string;
   currency: string;
-  imageUrls: string[];
+  imageUrls?: string[]; // 🚀 Opsiyonel ve modifier çakışması bitti
+  specs?: Record<string, string | number | boolean | null>; // 🚀 Opsiyonel ve modifier çakışması bitti
   categoryId: number;
-  specs: Record<string, string | number | boolean | null>;
   sellerId?: number;
+  seller?: User;
   createdAt: string;
 }
+
+export interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, pass: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+export type UserRole = 'admin' | 'agent' | 'user';
 
 export interface Banner {
   id: number;

@@ -9,7 +9,6 @@ export default function HomePage() {
   const { t, i18n } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [listings, setListings] = useState<Listing[]>([]);
-
   const isTr = i18n.language.startsWith('tr');
 
   useEffect(() => {
@@ -22,35 +21,33 @@ export default function HomePage() {
         setCategories(catRes.data);
         setListings(listRes.data);
       } catch (err) {
-        console.error('Veri çekme hatası:', err);
+        console.error(err);
       }
     };
     fetchData();
   }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <HeroSlider />
-      <main className="max-w-350 mx-auto px-6 md:px-10 relative z-30 -mt-20 md:-mt-44">
-        {/* 1. KATEGORİLER SEKSİYONU */}
-        <section className="mb-16">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+
+      <main className="max-w-350 mx-auto px-6 md:px-10 relative z-30 -mt-16 md:-mt-32 pb-20 w-full flex-1">
+        {/* 1. KATEGORİLER: 4'lü Grid ve Temiz Görünüm */}
+        <section className="mb-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((cat) => (
               <Link
                 key={cat.id}
                 to={`/category/${cat.slug}`}
-                className="bg-[#0f172a] p-1 rounded-3xl border border-white/5 shadow-2xl hover:scale-[1.02] transition-all duration-300 group no-underline"
+                className="bg-white dark:bg-[#0f172a] p-1.5 rounded-3xl border border-slate-200 dark:border-white/5 shadow-xl hover:scale-[1.05] transition-all duration-500 group no-underline overflow-hidden block"
               >
                 <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
                   <img
-                    src={
-                      cat.imageUrl ||
-                      'https://images.unsplash.com/photo-1461376226594-32937e499bca?w=500'
-                    }
-                    className="object-cover w-full h-full opacity-80 group-hover:opacity-100 transition-opacity"
+                    src={cat.imageUrl}
+                    className="object-cover w-full h-full opacity-90 group-hover:opacity-100 transition-opacity"
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-[#0f172a] via-transparent to-transparent flex items-end p-5">
-                    <span className="font-black uppercase tracking-tighter text-lg italic text-white drop-shadow-md">
+                  <div className="absolute inset-0 bg-linear-to-t from-slate-900/80 dark:from-[#0f172a]/90 via-transparent to-transparent flex items-end p-5">
+                    <span className="font-black uppercase tracking-tighter text-xl italic text-white">
                       {isTr ? cat.titleTr : cat.titleEn}
                     </span>
                   </div>
@@ -60,29 +57,25 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 2. İLANLAR SEKSİYONU */}
-        <section>
-          <h2 className="text-4xl font-black uppercase tracking-tighter mb-12 border-b border-white/5 pb-6 italic">
+        {/* 2. İLANLAR: Picked For You Başlık Düzenlemesi */}
+        <section className="pt-10">
+          <h2 className="text-4xl font-black uppercase tracking-tighter mb-12 border-b border-slate-200 dark:border-white/10 pb-6 italic text-slate-900 dark:text-white">
+            {/* 🚀 text-slate-900 sayesinde aydınlık modda jilet gibi görünür */}
             {isTr ? 'Sizin İçin ' : 'Picked For '}
             <span className="text-purple-600">
               {isTr ? 'Seçtiklerimiz' : 'You'}
             </span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {listings.map((item: Listing) => {
-              // 🚀 TS Fix: Güvenli resim kontrolü
-              const hasImages =
-                Array.isArray(item.imageUrls) && item.imageUrls.length > 0;
-              const mainImage = hasImages ? item.imageUrls![0] : null;
-
+              const mainImage = item.imageUrls?.[0] || null;
               return (
                 <div
                   key={item.id}
-                  className="bg-[#0f172a] p-6 rounded-4xl border border-white/5 hover:border-purple-500/30 transition-all group flex flex-col"
+                  className="bg-white dark:bg-[#0f172a] p-6 rounded-4xl border border-slate-200 dark:border-white/5 hover:border-purple-500/30 transition-all group flex flex-col h-full shadow-lg"
                 >
-                  {/* İLAN GÖRSELİ */}
-                  <div className="aspect-square rounded-2xl overflow-hidden mb-6 bg-slate-800 flex items-center justify-center border border-white/5 relative">
+                  <div className="aspect-square rounded-3xl overflow-hidden mb-6 bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-white/5 relative">
                     {mainImage ? (
                       <img
                         src={mainImage}
@@ -90,33 +83,27 @@ export default function HomePage() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
                     ) : (
-                      <span className="text-slate-600 italic text-[10px] font-bold uppercase tracking-widest text-center px-4">
+                      <span className="text-slate-400 dark:text-slate-600 italic text-[10px] font-bold uppercase tracking-widest">
                         {t('image_coming_soon')}
                       </span>
                     )}
                   </div>
 
-                  {/* İLAN BİLGİLERİ */}
-                  <h3 className="font-bold text-lg uppercase mb-2 truncate text-white italic">
+                  <h3 className="font-bold text-lg uppercase truncate text-slate-900 dark:text-white italic mb-2">
                     {isTr
                       ? item.titleTr || item.title
                       : item.titleEn || item.title}
                   </h3>
-                  <p className="text-slate-400 text-sm mb-6 line-clamp-2 leading-relaxed">
-                    {isTr
-                      ? item.descriptionTr || item.description
-                      : item.descriptionEn || item.description}
-                  </p>
 
-                  <div className="flex justify-between items-center mt-auto pt-4 border-t border-white/5">
-                    <span className="text-2xl font-black text-purple-400">
+                  <div className="flex justify-between items-center mt-auto pt-6 border-t border-slate-100 dark:border-white/5">
+                    <span className="text-2xl font-black text-purple-600 dark:text-purple-400">
                       {Number(item.price).toLocaleString(
                         isTr ? 'tr-TR' : 'en-US',
                       )}{' '}
                       ₺
                     </span>
                     <Link to={`/listing/${item.id}`}>
-                      <button className="bg-white text-black p-3 rounded-xl hover:bg-purple-600 hover:text-white transition-all cursor-pointer shadow-lg active:scale-90">
+                      <button className="bg-slate-900 dark:bg-white text-white dark:text-black p-3 rounded-xl hover:bg-purple-600 hover:text-white transition-all cursor-pointer shadow-lg active:scale-95">
                         →
                       </button>
                     </Link>

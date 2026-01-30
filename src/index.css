@@ -1,8 +1,39 @@
 @import 'tailwindcss';
 
-body {
-  margin: 0;
-  background-color: #020617;
-  color: white;
-  font-family: 'Inter', sans-serif;
+/* 🚀 KESİN ÇÖZÜM: Tailwind v4'e .dark sınıfını izlemesini söylüyoruz */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    /* Gündüz Modu Renkleri */
+    --color-bg-main: #f8fafc;
+    --color-text-main: #0f172a;
+    --color-card-bg: #ffffff;
+    --color-card-border: #e2e8f0;
+
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+    transition: all 0.5s ease;
+  }
+
+  html.dark {
+    /* Gece Modu Renkleri */
+    --color-bg-main: #020617;
+    --color-text-main: #f8fafc;
+    --color-card-bg: #0f172a;
+    --color-card-border: rgba(255, 255, 255, 0.05);
+
+    background-color: var(--color-bg-main);
+    color: var(--color-text-main);
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
