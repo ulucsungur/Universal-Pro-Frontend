@@ -28,12 +28,17 @@ export interface Listing {
   descriptionEn?: string;
   price: number | string;
   currency: string;
-  imageUrls?: string[]; // 🚀 Opsiyonel ve modifier çakışması bitti
-  specs?: Record<string, string | number | boolean | null>; // 🚀 Opsiyonel ve modifier çakışması bitti
+  imageUrls?: string[];
+  specs?: Record<string, string | number | boolean | null>;
   categoryId: number;
   sellerId?: number;
   seller?: User;
   createdAt: string;
+
+  // 🚀 TİCARET TİPLERİ
+  type: 'sale' | 'rent';
+  isDaily: 'true' | 'false';
+  stock: number;
 }
 
 export interface AuthContextType {
