@@ -92,6 +92,27 @@ export default function CategoryPage() {
                 >
                   <div className="bg-white dark:bg-[#0f172a] p-6 rounded-4xl border border-slate-200 dark:border-white/5 hover:border-purple-500/30 transition-all flex flex-col h-full shadow-lg">
                     <div className="aspect-square rounded-3xl overflow-hidden mb-6 bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-100 dark:border-white/5 relative">
+                      {/* 🚀 TİCARİ ETİKETLER (BADGES) */}
+                      <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+                        {item.type === 'sale' ? (
+                          <span className="bg-purple-600 text-white text-[9px] font-black px-2.5 py-1 rounded-lg shadow-xl uppercase tracking-widest animate-in slide-in-from-left-2">
+                            {t('for_sale')}
+                          </span>
+                        ) : (
+                          <div className="flex flex-col gap-1">
+                            <span className="bg-blue-600 text-white text-[9px] font-black px-2.5 py-1 rounded-lg shadow-xl uppercase tracking-widest animate-in slide-in-from-left-2">
+                              {t('for_rent')}
+                            </span>
+                            {/* Eğer Airbnb moduysa (Günlükse) ek etiket çıkar */}
+                            {item.isDaily === 'true' && (
+                              <span className="bg-emerald-500 text-white text-[8px] font-black px-2 py-0.5 rounded-md shadow-lg uppercase tracking-tighter text-center">
+                                {t('daily')}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
                       {mainImage ? (
                         <img
                           src={mainImage}

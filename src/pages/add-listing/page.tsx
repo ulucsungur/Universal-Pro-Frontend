@@ -53,6 +53,9 @@ export default function AddListingPage() {
     descriptionEn: '',
     price: '',
     currency: 'TRY',
+    type: 'sale', // 🚀 Varsayılan: Satılık
+    isDaily: 'false', // 🚀 Varsayılan: Hayır
+    stock: '1', // 🚀 Varsayılan: 1 adet
   });
 
   useEffect(() => {
@@ -252,6 +255,81 @@ export default function AddListingPage() {
                       </span>
                     </div>
                   )
+                )}
+              </div>
+
+              {/* SATILIK/KIRALIK */}
+              <div className="space-y-6 bg-slate-50 dark:bg-white/5 p-8 rounded-3xl border border-slate-200 dark:border-white/5 animate-in fade-in duration-500">
+                <label className="text-[10px] font-black uppercase text-purple-600 italic tracking-[0.2em]">
+                  {t('listing_type')}
+                </label>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {/* SATILIK BUTONU */}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        type: 'sale',
+                        isDaily: 'false',
+                      })
+                    }
+                    className={`p-4 rounded-2xl border-2 transition-all font-bold text-xs uppercase tracking-widest ${formData.type === 'sale' ? 'border-purple-600 bg-purple-600/10 text-purple-600' : 'border-slate-200 dark:border-white/5 text-slate-400'}`}
+                  >
+                    {t('sale')}
+                  </button>
+
+                  {/* KİRALIK BUTONU */}
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, type: 'rent' })}
+                    className={`p-4 rounded-2xl border-2 transition-all font-bold text-xs uppercase tracking-widest ${formData.type === 'rent' ? 'border-blue-600 bg-blue-600/10 text-blue-600' : 'border-slate-200 dark:border-white/5 text-slate-400'}`}
+                  >
+                    {t('rent')}
+                  </button>
+                </div>
+
+                {/* 🚀 AIRBNB KOŞULU: Eğer Kiralık seçildiyse 'Günlük mü?' sorusu açılır */}
+                {formData.type === 'rent' && (
+                  <div className="flex items-center justify-between p-4 bg-white dark:bg-[#020617] rounded-2xl border border-blue-500/20 mt-4 animate-in zoom-in duration-300">
+                    <div className="space-y-1">
+                      <p className="text-xs font-bold text-slate-900 dark:text-white">
+                        {t('is_daily')}
+                      </p>
+                      <p className="text-[10px] text-slate-500 italic">
+                        {t('daily_info')}
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={formData.isDaily === 'true'}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          isDaily: e.target.checked ? 'true' : 'false',
+                        })
+                      }
+                      className="w-6 h-6 rounded-lg accent-purple-600 cursor-pointer"
+                    />
+                  </div>
+                )}
+
+                {/* 🚀 AMAZON KOŞULU: Eğer Satılık seçildiyse 'Stok' sorusu açılır (Vasıta/Emlak hariç ileride filtreleyeceğiz) */}
+                {formData.type === 'sale' && (
+                  <div className="space-y-2 mt-4 animate-in slide-in-from-top-2">
+                    <label className="text-[9px] font-bold text-slate-500 uppercase ml-2">
+                      {t('stock_label')}
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.stock}
+                      onChange={(e) =>
+                        setFormData({ ...formData, stock: e.target.value })
+                      }
+                      className="w-full bg-white dark:bg-[#020617] border border-slate-200 dark:border-white/10 p-3 rounded-xl text-xs outline-none focus:border-purple-600"
+                    />
+                  </div>
                 )}
               </div>
 
