@@ -48,15 +48,15 @@ export const HeroSlider = () => {
   const currentBanner = banners[currentIndex];
 
   return (
-    <div className="relative w-full h-80 md:h-130 overflow-hidden bg-[#eaeded] dark:bg-[#020617]">
+    <div className="relative w-full h-80 md:h-130 overflow-hidden bg-[#eaeded] dark:bg-[#acbbff] ">
       {/* 1. ARKA PLAN RESMİ */}
       <div
         style={{ backgroundImage: `url(${currentBanner.imageUrl})` }}
         className="absolute inset-0 bg-center bg-cover duration-1000 ease-in-out"
       />
 
-      {/* 🚀 2. İÇERİK KATMANI (Z-INDEX YÜKSELTİLDİ: z-30) */}
-      <div className="absolute inset-0 flex items-center px-10 md:px-24 z-30">
+      {/* 🚀 2. İÇERİK KATMANI */}
+      <div className="absolute inset-0 flex items-start px-10 md:px-24 z-30 pt-35 md:pt-45">
         <div className="max-w-xl space-y-6 animate-in slide-in-from-left-10 duration-700">
           <h1 className="text-3xl md:text-6xl font-black text-white uppercase italic drop-shadow-2xl leading-tight">
             {isTr ? currentBanner.titleTr : currentBanner.titleEn}
