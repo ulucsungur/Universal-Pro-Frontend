@@ -126,7 +126,7 @@ export const Navbar = () => {
                 </div>
 
                 <div className="hidden lg:block text-left leading-none">
-                  <p className="text-[10px] font-black text-white uppercase tracking-tighter truncate max-w-[100px]">
+                  <p className="text-[10px] font-black text-white uppercase tracking-tighter truncate max-w-25">
                     {user.fullName}
                   </p>
                   <p className="text-[8px] text-slate-500 font-bold uppercase mt-1">
