@@ -9,6 +9,7 @@ import AddBannerPage from './pages/admin/add-banner/page';
 import CategoryPage from './pages/category-detail/page';
 import ListingDetailPage from './pages/listing-detail/page';
 import { Footer } from './components/layout/Footer';
+import MyOrdersPage from './pages/orders/page';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/add-listing" element={<AddListingPage />} />
             <Route path="/admin/add-category" element={<AddCategoryPage />} />
+            <Route path="/orders" element={<MyOrdersPage />} />
             <Route path="/admin/add-banner" element={<AddBannerPage />} />
             <Route path="/category/:slug" element={<CategoryPage />} />
             <Route path="/listing/:id" element={<ListingDetailPage />} />

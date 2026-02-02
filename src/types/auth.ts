@@ -60,3 +60,14 @@ export interface Banner {
   link: string;
   order: number;
 }
+export interface Order {
+  id: number;
+  listingId: number;
+  buyerId: number;
+  sellerId: number;
+  quantity: number;
+  totalPrice: string;
+  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
+  createdAt: string;
+  listing?: Listing; // Sipariş içindeki ürün bilgisi
+}
