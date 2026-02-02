@@ -33,12 +33,13 @@ export interface Listing {
   categoryId: number;
   sellerId?: number;
   seller?: User;
-  createdAt: string;
+  isShippable: 'true' | 'false'; // 🚀 Kargo kontrolü
 
   // 🚀 TİCARET TİPLERİ
   type: 'sale' | 'rent';
   isDaily: 'true' | 'false';
   stock: number;
+  createdAt: string;
 }
 
 export interface AuthContextType {
@@ -70,4 +71,14 @@ export interface Order {
   status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
   createdAt: string;
   listing?: Listing; // Sipariş içindeki ürün bilgisi
+}
+export interface Address {
+  id: number;
+  title: string;
+  fullName: string;
+  phone: string;
+  city: string;
+  district: string;
+  postCode: string;
+  addressDetail: string;
 }

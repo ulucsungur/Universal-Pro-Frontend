@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // 🚀 useNavigate eklendi
-import axios, { AxiosError } from 'axios'; // 🚀 AxiosError eklendi
+import axios from 'axios'; // 🚀 AxiosError eklendi
 import { ImageOff, Loader2 } from 'lucide-react';
 import type { Listing } from '../../types/auth';
 import { useTranslation } from 'react-i18next';
@@ -34,27 +34,17 @@ export default function ListingDetailPage() {
   }, [id]);
 
   // 🚀 SATIN ALMA FONKSİYONU (Hatalardan arındırıldı)
-  const handleBuyNow = async () => {
+  const handleBuyNow = () => {
+    // 1. Giriş kontrolü (Zorunlu)
     if (!user) {
       alert(t('login_required') || 'Lütfen önce giriş yapın');
       navigate('/login');
       return;
     }
 
-    try {
-      const res = await axios.post('http://localhost:5000/api/orders', {
-        listingId: listing?.id,
-        quantity: 1,
-      });
-      if (res.status === 201) {
-        alert(t('order_success'));
-        navigate('/orders');
-      }
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        alert(err.response?.data?.error || 'İşlem başarısız');
-      }
-    }
+    // 🚀 KESİN ÇÖZÜM: Buradan direkt API'ye gitmiyoruz.
+    // Kullanıcıyı elindeki ürünle beraber Kasa (Checkout) sayfasına fırlatıyoruz.
+    navigate(`/checkout/${listing?.id}`);
   };
 
   if (!listing)
@@ -143,12 +133,14 @@ export default function ListingDetailPage() {
           </div>
 
           {listing.type === 'rent' && listing.isDaily === 'true' ? (
+            /* 1. DURUM: GÜNLÜK KiRALIK (Airbnb Modu) */
             <BookingCalendar
               listingId={listing.id}
               dailyPrice={Number(listing.price)}
               currency={listing.currency}
             />
           ) : (
+            /* 2. DURUM: SATILIK VEYA STANDART KİRALIK */
             <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-2xl space-y-6">
               <div className="flex justify-between items-end border-b border-slate-100 dark:border-white/5 pb-6">
                 <span className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.3em]">
@@ -163,14 +155,21 @@ export default function ListingDetailPage() {
                   </span>
                 </span>
               </div>
-              <button
-                onClick={handleBuyNow} // 🚀 Bağlantı yapıldı
-                className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-black py-5 rounded-2xl hover:bg-purple-600 hover:text-white transition-all transform active:scale-95 uppercase tracking-widest text-[10px] cursor-pointer"
-              >
-                {listing.type === 'sale'
-                  ? t('buy_now_btn')
-                  : t('contact_seller')}
-              </button>
+              {/* 🚀 AKILLI BUTON KONTROLÜ */}
+              {listing.type === 'sale' && listing.isShippable === 'true' ? (
+                /* Ürün satılık VE kargolanabilirse (Amazon Modu) */
+                <button
+                  onClick={handleBuyNow}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-purple-600/20 uppercase text-[10px] tracking-widest cursor-pointer"
+                >
+                  {t('buy_now_btn')}
+                </button>
+              ) : (
+                /* Ürün kargolanamıyorsa (Araba/Ev) veya Uzun Dönem Kiralıksa */
+                <button className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-black py-5 rounded-2xl hover:bg-purple-600 hover:text-white transition-all uppercase text-[10px] tracking-widest cursor-pointer">
+                  {t('contact_seller')}
+                </button>
+              )}
             </div>
           )}
 

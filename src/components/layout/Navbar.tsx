@@ -2,13 +2,17 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import {
+  Package,
   LogOut,
   PlusCircle,
+  BadgeDollarSign,
+  Settings,
   User,
   ChevronDown,
   LayoutDashboard,
   Plus,
   Image as ImageIcon,
+  MapPin,
 } from 'lucide-react';
 import { SubNavbar } from './SubNavbar';
 import { useTranslation } from 'react-i18next';
@@ -142,35 +146,88 @@ export const Navbar = () => {
                     className="fixed inset-0 z-10"
                     onClick={() => setIsAccountOpen(false)}
                   />
-                  <div className="absolute top-14 right-0 w-52 bg-[#0f172a] border border-white/5 rounded-2xl shadow-2xl p-2 z-20 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="p-3 border-b border-white/5 mb-1">
-                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">
-                        Hesap Yönetimi
+                  <div className="absolute top-14 right-0 w-64 bg-[#0f172a] border border-white/5 rounded-3xl shadow-2xl p-2 z-20 animate-in fade-in zoom-in-95 duration-200">
+                    {/* 1. KULLANICI ÖZETİ */}
+                    <div className="p-4 border-b border-white/5 mb-2">
+                      <p className="text-[9px] font-black text-slate-500 uppercase mb-1 italic tracking-widest">
+                        Giriş Yapıldı
                       </p>
-                      <p className="text-[11px] font-bold text-white truncate">
-                        {user.email}
+                      <p className="text-xs font-bold text-white truncate">
+                        {user.fullName}
+                      </p>
+                      <p className="text-[9px] font-bold text-purple-400 uppercase tracking-tighter mt-1">
+                        {user.role}
                       </p>
                     </div>
 
-                    <Link
-                      to="/dashboard"
-                      onClick={() => setIsAccountOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
-                    >
-                      <LayoutDashboard size={14} className="text-purple-500" />
-                      {t('adminPanel') || 'Panelim'}
-                    </Link>
+                    <div className="space-y-1">
+                      {/* 🚀 ADMIN PANELİ (Sadece Yetkililere) */}
+                      {isAuthorized && (
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setIsAccountOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all uppercase tracking-widest no-underline"
+                        >
+                          <LayoutDashboard size={14} />
+                          {t('nav_dashboard')}
+                        </Link>
+                      )}
 
-                    <button
-                      onClick={() => {
-                        logout();
-                        setIsAccountOpen(false);
-                      }}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black text-red-500 hover:bg-red-500/10 rounded-xl transition-all uppercase tracking-widest mt-1 border-t border-white/5"
-                    >
-                      <LogOut size={14} />
-                      {t('logout')}
-                    </button>
+                      {/* 2. SİPARİŞLERİM */}
+                      <Link
+                        to="/orders"
+                        onClick={() => setIsAccountOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                      >
+                        <Package size={14} className="text-blue-500" />
+                        {t('nav_my_orders')}
+                      </Link>
+
+                      {/* 3. SATIŞLARIM (Gelen Siparişler) */}
+                      {isAuthorized && (
+                        <Link
+                          to="/sales"
+                          onClick={() => setIsAccountOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                        >
+                          <BadgeDollarSign
+                            size={14}
+                            className="text-green-500"
+                          />
+                          {t('nav_my_sales')}
+                        </Link>
+                      )}
+
+                      {/* 🚀 ADRESLERİM (Artık bağımsız bir link) */}
+                      <Link
+                        to="/profile/addresses"
+                        onClick={() => setIsAccountOpen(false)}
+                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                      >
+                        <MapPin size={14} className="text-red-400" />
+                        {t('nav_addresses')}
+                      </Link>
+
+                      <div className="h-px bg-white/5 my-2" />
+
+                      {/* 4. PROFİL / AYARLAR (İsim, şifre değişikliği vb.) */}
+                      <button className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest text-left">
+                        <Settings size={14} />
+                        {t('nav_profile_settings')}
+                      </button>
+
+                      {/* 5. ÇIKIŞ YAP */}
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsAccountOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-red-500 hover:bg-red-500/10 rounded-xl transition-all uppercase tracking-widest mt-1 border-t border-white/5"
+                      >
+                        <LogOut size={14} />
+                        {t('logout')}
+                      </button>
+                    </div>
                   </div>
                 </>
               )}

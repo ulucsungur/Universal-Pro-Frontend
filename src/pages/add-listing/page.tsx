@@ -9,6 +9,7 @@ import {
   ChevronRight,
   LayoutGrid,
   RotateCcw,
+  Tag,
 } from 'lucide-react';
 //import { AuthLayout } from '../../components/auth/AuthLayout';
 import { useTranslation } from 'react-i18next';
@@ -56,6 +57,7 @@ export default function AddListingPage() {
     type: 'sale', // 🚀 Varsayılan: Satılık
     isDaily: 'false', // 🚀 Varsayılan: Hayır
     stock: '1', // 🚀 Varsayılan: 1 adet
+    isShippable: 'true',
   });
 
   useEffect(() => {
@@ -398,11 +400,37 @@ export default function AddListingPage() {
                   />
                 </div>
               </div>
+              {/* KARGOLANABILIR MI */}
+              <div className="flex items-center justify-between p-6 bg-slate-50 dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-white/5 transition-all">
+                <div className="space-y-1">
+                  <p className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-tighter">
+                    Online Satış ve Kargo
+                  </p>
+                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                    Bu ürün kargo ile gönderime uygun mu? (Amazon Modu)
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={formData.isShippable === 'true'}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      isShippable: e.target.checked ? 'true' : 'false',
+                    })
+                  }
+                  className="w-6 h-6 rounded-lg accent-purple-600 cursor-pointer"
+                />
+              </div>
 
               {/* FİYAT */}
               <div className="grid grid-cols-2 gap-6 pt-4 border-t border-slate-100 dark:border-white/5">
+                <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic">
+                  <Tag size={12} /> {t('price')}
+                </label>
                 <input
                   type="number"
+                  step="0.01"
                   placeholder="0.00"
                   onChange={(e) =>
                     setFormData({ ...formData, price: e.target.value })
@@ -410,6 +438,9 @@ export default function AddListingPage() {
                   className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 p-5 rounded-3xl outline-none focus:border-purple-600 font-black text-xl text-slate-900 dark:text-white"
                   required
                 />
+                <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 italic">
+                  <Tag size={12} /> {t('currency')}
+                </label>
                 <select
                   onChange={(e) =>
                     setFormData({ ...formData, currency: e.target.value })
@@ -418,6 +449,7 @@ export default function AddListingPage() {
                 >
                   <option value="TRY">TRY (₺)</option>
                   <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
                 </select>
               </div>
 
