@@ -34,6 +34,7 @@ export interface Listing {
   sellerId?: number;
   seller?: User;
   isShippable: 'true' | 'false'; // 🚀 Kargo kontrolü
+  category?: Category;
 
   // 🚀 TİCARET TİPLERİ
   type: 'sale' | 'rent';
@@ -66,11 +67,15 @@ export interface Order {
   listingId: number;
   buyerId: number;
   sellerId: number;
+  addressId: number | null;
   quantity: number;
   totalPrice: string;
   status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
+  shippingStatus: 'preparing' | 'shipped' | 'delivered';
   createdAt: string;
   listing?: Listing; // Sipariş içindeki ürün bilgisi
+  buyer?: User;
+  address?: Address;
 }
 export interface Address {
   id: number;

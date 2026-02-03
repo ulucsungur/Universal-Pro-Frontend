@@ -22,12 +22,12 @@ export default function MyOrdersPage() {
 
   const getStatusInfo = (status: string) => {
     switch (status) {
-      case 'paid':
+      case 'preparing':
         return {
           color: 'text-blue-500',
           bg: 'bg-blue-500/10',
           icon: <Package size={14} />,
-          text: t('status_paid'),
+          text: t('status_preparing'),
         };
       case 'shipped':
         return {
@@ -48,7 +48,7 @@ export default function MyOrdersPage() {
           color: 'text-slate-500',
           bg: 'bg-slate-500/10',
           icon: <Package size={14} />,
-          text: status,
+          text: status.toUpperCase(),
         };
     }
   };
@@ -70,7 +70,7 @@ export default function MyOrdersPage() {
         <div className="space-y-4">
           {orders.length > 0 ? (
             orders.map((order) => {
-              const status = getStatusInfo(order.status);
+              const currentStatus = getStatusInfo(order.shippingStatus);
               return (
                 <div
                   key={order.id}
@@ -103,10 +103,10 @@ export default function MyOrdersPage() {
                   </div>
 
                   <div
-                    className={`px-4 py-2 rounded-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest ${status.bg} ${status.color}`}
+                    className={`px-4 py-2 rounded-xl flex items-center gap-2 font-black text-[10px] uppercase tracking-widest ${currentStatus.bg} ${currentStatus.color}`}
                   >
-                    {status.icon}
-                    {status.text}
+                    {currentStatus.icon}
+                    {currentStatus.text}
                   </div>
                 </div>
               );

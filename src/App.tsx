@@ -12,6 +12,7 @@ import { Footer } from './components/layout/Footer';
 import MyOrdersPage from './pages/orders/page';
 import MyAddressesPage from './pages/profile/addresses/page';
 import CheckoutPage from './pages/checkout/page';
+import MySalesPage from './pages/sales/page';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/add-listing" element={<AddListingPage />} />
             <Route path="/admin/add-category" element={<AddCategoryPage />} />
             <Route path="/orders" element={<MyOrdersPage />} />
+            <Route path="/sales" element={<MySalesPage />} />
             <Route path="/profile/addresses" element={<MyAddressesPage />} />
             <Route path="/checkout/:id" element={<CheckoutPage />} />
             <Route path="/admin/add-banner" element={<AddBannerPage />} />
