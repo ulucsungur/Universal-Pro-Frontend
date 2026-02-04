@@ -48,6 +48,9 @@ export interface AuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
+  // 🚀 YENİ EKLENENLER
+  unreadCount: number;
+  refreshUnreadCount: () => Promise<void>;
 }
 
 export type UserRole = 'admin' | 'agent' | 'user';
@@ -86,4 +89,19 @@ export interface Address {
   district: string;
   postCode: string;
   addressDetail: string;
+}
+
+export interface Message {
+  id: number;
+  senderId: number;
+  receiverId: number;
+  listingId: number;
+  content: string;
+  isRead: 'true' | 'false';
+  createdAt: string;
+
+  // İlişkisel veriler
+  sender?: User;
+  receiver?: User;
+  listing?: Listing;
 }

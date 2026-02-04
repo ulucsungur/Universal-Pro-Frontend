@@ -1,33 +1,38 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useTheme } from '../../hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 import {
-  Package,
   LogOut,
-  PlusCircle,
+  Package,
   BadgeDollarSign,
-  Settings,
-  User,
-  ChevronDown,
+  MapPin,
   LayoutDashboard,
+  Settings,
+  Globe,
+  Moon,
+  Sun,
+  PlusCircle,
   Plus,
   Image as ImageIcon,
-  MapPin,
+  User as UserIcon,
+  ChevronDown,
+  MessageSquare,
 } from 'lucide-react';
 import { SubNavbar } from './SubNavbar';
-import { useTranslation } from 'react-i18next';
 import { Sidedrawer } from './Sidedrawer';
-import { Sun, Moon } from 'lucide-react';
-import { useTheme } from '../../hooks/useTheme';
 import { Tooltip } from '../ui/Tooltip';
 
 export const Navbar = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isAccountOpen, setIsAccountOpen] = useState(false); // 🚀 Dropdown kontrolü
-  const { user, logout } = useAuth();
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+
+  // 🚀 MERKEZİ VERİLER (unreadCount artık buradan tek kanalla geliyor)
+  const { user, logout, unreadCount } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
 
-  const { theme, toggleTheme } = useTheme();
   const isAuthorized = user?.role === 'admin' || user?.role === 'agent';
 
   const toggleLanguage = () => {
@@ -38,25 +43,22 @@ export const Navbar = () => {
   return (
     <>
       <header className="h-20 border-b border-white/5 flex items-center px-6 md:px-10 justify-between sticky top-0 bg-[#020617] z-50">
-        {/* 🚀 LOGO: Her zaman Beyaz */}
         <Link
           to="/"
           className="text-xl font-black italic uppercase tracking-tighter text-white no-underline shrink-0"
         >
           UNIVERSAL<span className="text-purple-600">MARKET</span>
         </Link>
+
         <div className="flex items-center gap-3 md:gap-6">
-          {/* 2. AKSİYON GRUBU (DİL + ADMIN İŞLEMLERİ) */}
           <div className="flex items-center gap-2">
-            {/* DİL SEÇİCİ */}
             <button
               onClick={toggleLanguage}
               className="text-[10px] font-black uppercase text-white/40 hover:text-white transition-all px-3 py-2 border border-white/5 rounded-xl cursor-pointer"
             >
-              {i18n.language.startsWith('tr') ? 'EN' : 'TR'}
+              <Globe size={12} /> {i18n.language.startsWith('tr') ? 'EN' : 'TR'}
             </button>
 
-            {/* TEMA DEĞİŞTİRİCİ */}
             <button
               onClick={toggleTheme}
               className="p-2.5 bg-white/5 border border-white/5 rounded-xl text-white/40 hover:text-purple-500 transition-all cursor-pointer"
@@ -64,11 +66,9 @@ export const Navbar = () => {
               {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
             </button>
 
-            {/* ADMIN HIZLI ERİŞİM (İkonik ve Şık) */}
             {isAuthorized && (
               <div className="flex items-center gap-2 bg-white/5 p-1 rounded-2xl border border-white/5">
-                {/* Kategori Ekle Tooltip */}
-                <Tooltip text={t('addcategory')}>
+                <Tooltip text={t('addcategory') || 'Kategori Ekle'}>
                   <Link
                     to="/admin/add-category"
                     className="p-2 hover:bg-white/10 text-blue-400 rounded-xl transition-all"
@@ -76,9 +76,7 @@ export const Navbar = () => {
                     <PlusCircle size={18} />
                   </Link>
                 </Tooltip>
-
-                {/* İlan Ver Tooltip */}
-                <Tooltip text={t('add_listing')}>
+                <Tooltip text={t('add_listing') || 'İlan Ver'}>
                   <Link
                     to="/add-listing"
                     className="p-2 hover:bg-white/10 text-purple-500 rounded-xl transition-all border-x border-white/5"
@@ -86,8 +84,6 @@ export const Navbar = () => {
                     <Plus size={18} />
                   </Link>
                 </Tooltip>
-
-                {/* Banner Ekle Tooltip */}
                 <Tooltip text="ADD BANNER">
                   <Link
                     to="/admin/add-banner"
@@ -102,7 +98,6 @@ export const Navbar = () => {
 
           <div className="h-8 w-px bg-white/10 mx-1 hidden sm:block" />
 
-          {/* 3. KULLANICI / HESAP ALANI (Dropdown Yapısı) */}
           {user ? (
             <div className="relative">
               <button
@@ -119,12 +114,11 @@ export const Navbar = () => {
                     />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center">
-                      <User size={14} className="text-white" />
+                      <UserIcon size={14} className="text-white" />
                     </div>
                   )}
                   <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-[#020617] rounded-full" />
                 </div>
-
                 <div className="hidden lg:block text-left leading-none">
                   <p className="text-[10px] font-black text-white uppercase tracking-tighter truncate max-w-25">
                     {user.fullName}
@@ -139,7 +133,6 @@ export const Navbar = () => {
                 />
               </button>
 
-              {/* 🚀 PRO DROPDOWN MENU */}
               {isAccountOpen && (
                 <>
                   <div
@@ -147,82 +140,89 @@ export const Navbar = () => {
                     onClick={() => setIsAccountOpen(false)}
                   />
                   <div className="absolute top-14 right-0 w-64 bg-[#0f172a] border border-white/5 rounded-3xl shadow-2xl p-2 z-20 animate-in fade-in zoom-in-95 duration-200">
-                    {/* 1. KULLANICI ÖZETİ */}
                     <div className="p-4 border-b border-white/5 mb-2">
                       <p className="text-[9px] font-black text-slate-500 uppercase mb-1 italic tracking-widest">
                         Giriş Yapıldı
                       </p>
                       <p className="text-xs font-bold text-white truncate">
-                        {user.fullName}
-                      </p>
-                      <p className="text-[9px] font-bold text-purple-400 uppercase tracking-tighter mt-1">
-                        {user.role}
+                        {user.email}
                       </p>
                     </div>
 
                     <div className="space-y-1">
-                      {/* 🚀 ADMIN PANELİ (Sadece Yetkililere) */}
                       {isAuthorized && (
                         <Link
                           to="/dashboard"
                           onClick={() => setIsAccountOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all uppercase tracking-widest no-underline"
+                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all uppercase no-underline"
                         >
                           <LayoutDashboard size={14} />
-                          {t('nav_dashboard')}
+                          {t('nav_dashboard') || 'Panelim'}
                         </Link>
                       )}
-
-                      {/* 2. SİPARİŞLERİM */}
                       <Link
                         to="/orders"
                         onClick={() => setIsAccountOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
                       >
                         <Package size={14} className="text-blue-500" />
-                        {t('nav_my_orders')}
+                        {t('nav_my_orders') || 'Siparişlerim'}
                       </Link>
-
-                      {/* 3. SATIŞLARIM (Gelen Siparişler) */}
                       {isAuthorized && (
                         <Link
                           to="/sales"
                           onClick={() => setIsAccountOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
                         >
                           <BadgeDollarSign
                             size={14}
                             className="text-green-500"
                           />
-                          {t('nav_my_sales')}
+                          {t('nav_my_sales') || 'Satışlarım'}
                         </Link>
                       )}
 
-                      {/* 🚀 ADRESLERİM (Artık bağımsız bir link) */}
+                      {/* MESAJLAR LİNKİ VE BİLDİRİM ROZETİ */}
+                      <Link
+                        to="/messages"
+                        onClick={() => setIsAccountOpen(false)}
+                        className="flex items-center justify-between px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
+                      >
+                        <div className="flex items-center gap-3">
+                          <MessageSquare
+                            size={14}
+                            className="text-purple-500"
+                          />
+                          {t('nav_my_messages') || 'Mesajlarım'}
+                        </div>
+                        {unreadCount > 0 && (
+                          <span className="bg-red-500 text-white text-[9px] px-2 py-0.5 rounded-full animate-pulse shadow-lg">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </Link>
+
                       <Link
                         to="/profile/addresses"
                         onClick={() => setIsAccountOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
                       >
                         <MapPin size={14} className="text-red-400" />
-                        {t('nav_addresses')}
+                        {t('nav_addresses') || 'Adreslerim'}
                       </Link>
 
                       <div className="h-px bg-white/5 my-2" />
 
-                      {/* 4. PROFİL / AYARLAR (İsim, şifre değişikliği vb.) */}
-                      <button className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest text-left">
+                      <button className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-400 hover:text-white hover:bg-white/5 rounded-xl text-left uppercase">
                         <Settings size={14} />
-                        {t('nav_profile_settings')}
+                        {t('nav_profile_settings') || 'Ayarlar'}
                       </button>
-
-                      {/* 5. ÇIKIŞ YAP */}
                       <button
                         onClick={() => {
                           logout();
                           setIsAccountOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-red-500 hover:bg-red-500/10 rounded-xl transition-all uppercase tracking-widest mt-1 border-t border-white/5"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-red-500 hover:bg-red-500/10 rounded-xl mt-1 border-t border-white/5 uppercase tracking-widest"
                       >
                         <LogOut size={14} />
                         {t('logout')}
@@ -243,7 +243,6 @@ export const Navbar = () => {
         </div>
       </header>
 
-      {/* ALT BİLEŞENLER */}
       <SubNavbar onOpenDrawer={() => setIsDrawerOpen(true)} />
       <Sidedrawer
         isOpen={isDrawerOpen}

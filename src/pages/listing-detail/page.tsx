@@ -8,6 +8,7 @@ import { SpecsTable } from '../../components/listing/SpecsTable';
 import { SellerCard } from '../../components/listing/SellerCard';
 import { BookingCalendar } from '../../components/listing/BookingCalendar';
 import { useAuth } from '../../hooks/useAuth'; // 🚀 useAuth eklendi
+import { MessageModal } from '../../components/listing/MessageModal';
 
 export default function ListingDetailPage() {
   const { t, i18n } = useTranslation();
@@ -18,6 +19,7 @@ export default function ListingDetailPage() {
   const [listing, setListing] = useState<Listing | null>(null);
   const [activeImage, setActiveImage] = useState<string>('');
   const isTr = i18n.language.startsWith('tr');
+  const [isMsgOpen, setIsMsgOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -166,7 +168,10 @@ export default function ListingDetailPage() {
                 </button>
               ) : (
                 /* Ürün kargolanamıyorsa (Araba/Ev) veya Uzun Dönem Kiralıksa */
-                <button className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-black py-5 rounded-2xl hover:bg-purple-600 hover:text-white transition-all uppercase text-[10px] tracking-widest cursor-pointer">
+                <button
+                  onClick={() => setIsMsgOpen(true)}
+                  className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-black py-5 rounded-2xl hover:bg-purple-600 hover:text-white transition-all uppercase text-[10px] tracking-widest cursor-pointer"
+                >
                   {t('contact_seller')}
                 </button>
               )}
@@ -184,6 +189,13 @@ export default function ListingDetailPage() {
           <SellerCard seller={listing.seller} />
         </div>
       </div>
+      <MessageModal
+        isOpen={isMsgOpen}
+        onClose={() => setIsMsgOpen(false)}
+        listingId={listing.id}
+        receiverId={listing.sellerId!}
+        listingTitle={displayTitle}
+      />
     </div>
   );
 }

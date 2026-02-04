@@ -305,7 +305,7 @@ export default function MySalesPage() {
                       </button>
                     )}
                     {order.shippingStatus === 'delivered' && (
-                      <div className="flex flex-col items-center justify-center gap-2 text-green-500 font-black text-[11px] uppercase bg-green-500/5 py-8 rounded-[32px] border-2 border-dashed border-green-500/20">
+                      <div className="flex flex-col items-center justify-center gap-2 text-green-500 font-black text-[11px] uppercase bg-green-500/5 py-8 rounded-4xl border-2 border-dashed border-green-500/20">
                         <CheckCircle size={24} /> {t('status_delivered')}
                       </div>
                     )}
