@@ -1,6 +1,11 @@
 import { useEffect, useState, useMemo } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
-import axios, { AxiosError } from 'axios';
+import {
+  useParams,
+  useNavigate,
+  Link,
+  useSearchParams,
+} from 'react-router-dom';
+import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import {
   CreditCard,
@@ -11,14 +16,22 @@ import {
   Minus,
   Loader2,
   AlertCircle,
+  Users,
+  CalendarDays,
 } from 'lucide-react';
 import type { Listing, Address } from '../../types/auth';
+import { differenceInDays } from 'date-fns';
 
 export default function CheckoutPage() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const isTr = i18n.language.startsWith('tr');
+
+  const fromDate = searchParams.get('from');
+  const toDate = searchParams.get('to');
+  const isRental = !!(fromDate && toDate);
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -26,10 +39,9 @@ export default function CheckoutPage() {
     null,
   );
   const [loading, setLoading] = useState(true);
-
-  // 🚀 ÖDEME STATE'LERİ
-  const [quantity, setQuantity] = useState(1);
   const [isOrdering, setIsOrdering] = useState(false);
+
+  const [quantity, setQuantity] = useState(1);
   const [cardData, setCardData] = useState({
     name: '',
     number: '',
@@ -46,7 +58,8 @@ export default function CheckoutPage() {
         ]);
         setListing(listRes.data);
         setAddresses(addrRes.data);
-        if (addrRes.data.length > 0) setSelectedAddressId(addrRes.data[0].id);
+        if (!isRental && addrRes.data.length > 0)
+          setSelectedAddressId(addrRes.data[0].id);
       } catch (err) {
         console.error(err);
       } finally {
@@ -54,47 +67,83 @@ export default function CheckoutPage() {
       }
     };
     fetchData();
-  }, [id]);
+  }, [id, isRental]);
 
-  // 🚀 VALIDASYON MOTORU (Senior Manager Standartı)
+  // 🚀 AKILLI FORMATLAYICILAR (Amazon Deneyimi)
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const matches = v.match(/\d{4,16}/g);
+    const match = (matches && matches[0]) || '';
+    const parts = [];
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4));
+    }
+    if (parts.length > 0) return parts.join(' ');
+    return v;
+  };
+
+  const formatExpiry = (value: string) => {
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    if (v.length >= 2) return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
+    return v;
+  };
+
+  // 🚀 YENİLENMİŞ VE ESNEK VALIDASYON
   const isPaymentValid = useMemo(() => {
-    const { name, number, expiry, cvv } = cardData;
+    const cleanNumber = cardData.number.replace(/\s/g, '');
+    const cleanExpiry = cardData.expiry.replace(/\s/g, '');
 
-    // 1. İsim kontrolü (En az 5 karakter)
-    const nameValid = name.trim().length >= 5;
+    const nameOk = cardData.name.trim().length >= 5;
+    const numberOk = cleanNumber.length === 16;
+    const expiryOk = /^(0[1-9]|1[0-2])\/([2-9][0-9])$/.test(cleanExpiry); // 01/25 - 12/99 arası her şey
+    const cvvOk = cardData.cvv.length === 3;
 
-    // 2. Kart numarası (16 hane olmalı - boşluksuz)
-    const numberValid = number.replace(/\s/g, '').length === 16;
-
-    // 3. SKT (AA/YY formatı ve mantıksal kontrol)
-    const expiryRegex = /^(0[1-9]|1[0-2])\/?([2-9][5-9])$/;
-    const expiryValid = expiryRegex.test(expiry);
-
-    // 4. CVV (Tam 3 hane olmalı)
-    const cvvValid = /^\d{3}$/.test(cvv);
-
-    return nameValid && numberValid && expiryValid && cvvValid;
+    return nameOk && numberOk && expiryOk && cvvOk;
   }, [cardData]);
 
-  // Buton Aktiflik Kontrolü
-  const canOrder = selectedAddressId !== null && isPaymentValid && !isOrdering;
+  const days = useMemo(() => {
+    if (isRental && fromDate && toDate)
+      return differenceInDays(new Date(toDate), new Date(fromDate));
+    return 0;
+  }, [isRental, fromDate, toDate]);
+
+  const totalPrice = useMemo(() => {
+    if (!listing) return 0;
+    return isRental
+      ? Number(listing.price) * days
+      : Number(listing.price) * quantity;
+  }, [listing, isRental, days, quantity]);
+
+  const canOrder =
+    isPaymentValid &&
+    (isRental ? true : selectedAddressId !== null) &&
+    !isOrdering;
 
   const handleCompleteOrder = async () => {
     if (!canOrder) return;
     setIsOrdering(true);
-
     try {
-      await axios.post('http://localhost:5000/api/orders', {
-        listingId: listing?.id,
-        addressId: selectedAddressId,
-        quantity: quantity,
-      });
+      if (isRental) {
+        await axios.post('http://localhost:5000/api/bookings', {
+          listingId: listing?.id,
+          startDate: fromDate,
+          endDate: toDate,
+          totalPrice: totalPrice,
+          guests: quantity,
+        });
+      } else {
+        await axios.post('http://localhost:5000/api/orders', {
+          listingId: listing?.id,
+          addressId: selectedAddressId,
+          quantity: quantity,
+          totalPrice: totalPrice,
+        });
+      }
       alert(t('order_success'));
       navigate('/orders');
-    } catch (err: unknown) {
-      if (err instanceof AxiosError) {
-        alert(err.response?.data?.error || 'İşlem reddedildi.');
-      }
+    } catch (err) {
+      console.error(err);
+      alert('İşlem başarısız.');
     } finally {
       setIsOrdering(false);
     }
@@ -102,135 +151,109 @@ export default function CheckoutPage() {
 
   if (loading || !listing)
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#020617] flex items-center justify-center">
+      <div className="min-h-screen bg-[#020617] flex items-center justify-center">
         <Loader2 className="animate-spin text-purple-600" size={40} />
       </div>
     );
 
-  const subTotal = Number(listing.price) * quantity;
-
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] p-6 md:p-12 transition-colors duration-500">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#020617] p-6 md:p-12 transition-colors duration-500 text-slate-900 dark:text-white">
       <div className="max-w-350 mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12">
         <div className="lg:col-span-8 space-y-8">
-          <h1 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">
+          <h1 className="text-3xl font-black uppercase tracking-tighter italic">
             {t('checkout_title')}
           </h1>
 
-          {/* ADRES SEÇİMİ */}
-          <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-xl space-y-6">
-            <div className="flex justify-between items-center border-b border-slate-100 dark:border-white/5 pb-4">
-              <h2 className="text-sm font-black uppercase tracking-widest text-purple-600 flex items-center gap-2">
-                <MapPin size={18} /> {t('shipping_address')}
-              </h2>
-              <Link
-                to="/profile/addresses"
-                className="text-[10px] font-black text-blue-500 hover:underline uppercase no-underline tracking-widest"
-              >
-                <Plus size={12} className="inline mr-1" />{' '}
-                {t('add_address_btn')}
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {addresses.map((addr) => (
-                <div
-                  key={addr.id}
-                  onClick={() => setSelectedAddressId(addr.id)}
-                  className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-purple-600 bg-purple-600/5' : 'border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#020617]'}`}
+          {!isRental && (
+            <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-xl space-y-6">
+              <div className="flex justify-between items-center border-b border-slate-100 dark:border-white/5 pb-4">
+                <h2 className="text-sm font-black uppercase tracking-widest text-purple-600 flex items-center gap-2">
+                  <MapPin size={18} /> {t('shipping_address')}
+                </h2>
+                <Link
+                  to="/profile/addresses"
+                  className="text-[10px] font-black text-blue-500 hover:underline uppercase no-underline tracking-widest"
                 >
-                  <div className="flex justify-between items-start">
-                    <p className="font-black text-xs uppercase mb-1 dark:text-white">
+                  <Plus size={12} className="inline mr-1" />{' '}
+                  {t('add_address_btn')}
+                </Link>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {addresses.map((addr) => (
+                  <div
+                    key={addr.id}
+                    onClick={() => setSelectedAddressId(addr.id)}
+                    className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-purple-600 bg-purple-600/5' : 'border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-[#020617]'}`}
+                  >
+                    <p className="font-black text-xs uppercase mb-1">
                       {addr.title}
                     </p>
-                    {selectedAddressId === addr.id && (
-                      <CheckCircle2 size={14} className="text-purple-600" />
-                    )}
+                    <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">
+                      {addr.addressDetail}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">
-                    {addr.addressDetail}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* 🚀 GELİŞMİŞ ÖDEME FORMU */}
           <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-xl space-y-6">
             <h2 className="text-sm font-black uppercase tracking-widest text-purple-600 flex items-center gap-2 border-b border-slate-100 dark:border-white/5 pb-4">
               <CreditCard size={18} /> {t('payment_method')}
             </h2>
-
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase ml-1">
-                    {t('card_holder')}
-                  </label>
-                  <input
-                    value={cardData.name}
-                    onChange={(e) =>
-                      setCardData({ ...cardData, name: e.target.value })
-                    }
-                    className="w-full bg-slate-50 dark:bg-[#020617] p-4 rounded-xl border border-slate-200 dark:border-white/10 outline-none text-sm dark:text-white uppercase font-bold"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase ml-1">
-                    {t('card_number')}
-                  </label>
-                  <input
-                    maxLength={16}
-                    value={cardData.number}
-                    onChange={(e) =>
-                      setCardData({
-                        ...cardData,
-                        number: e.target.value.replace(/\D/g, ''),
-                      })
-                    }
-                    placeholder="1234 5678 9012 3456"
-                    className="w-full bg-slate-50 dark:bg-[#020617] p-4 rounded-xl border border-slate-200 dark:border-white/10 outline-none text-sm dark:text-white font-mono"
-                  />
-                </div>
+                <input
+                  value={cardData.name}
+                  onChange={(e) =>
+                    setCardData({ ...cardData, name: e.target.value })
+                  }
+                  placeholder={t('card_holder')}
+                  className="bg-slate-50 dark:bg-[#020617] border border-slate-200 dark:border-white/10 p-4 rounded-xl outline-none text-sm font-bold uppercase"
+                />
+                <input
+                  maxLength={19}
+                  value={cardData.number}
+                  onChange={(e) =>
+                    setCardData({
+                      ...cardData,
+                      number: formatCardNumber(e.target.value),
+                    })
+                  }
+                  placeholder="4912 0591 7951 2352"
+                  className="bg-slate-50 dark:bg-[#020617] border border-slate-200 dark:border-white/10 p-4 rounded-xl outline-none text-sm font-mono"
+                />
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase ml-1">
-                    AA / YY
-                  </label>
-                  <input
-                    maxLength={5}
-                    value={cardData.expiry}
-                    placeholder="05/28"
-                    onChange={(e) =>
-                      setCardData({ ...cardData, expiry: e.target.value })
-                    }
-                    className="w-full bg-slate-50 dark:bg-[#020617] p-4 rounded-xl border border-slate-200 dark:border-white/10 outline-none text-sm dark:text-white text-center font-bold"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[9px] font-black text-slate-400 uppercase ml-1">
-                    CVV
-                  </label>
-                  <input
-                    maxLength={3}
-                    value={cardData.cvv}
-                    onChange={(e) =>
-                      setCardData({
-                        ...cardData,
-                        cvv: e.target.value.replace(/\D/g, ''),
-                      })
-                    }
-                    placeholder="123"
-                    className="w-full bg-slate-50 dark:bg-[#020617] p-4 rounded-xl border border-slate-200 dark:border-white/10 outline-none text-sm dark:text-white text-center font-bold"
-                  />
-                </div>
+                <input
+                  maxLength={5}
+                  value={cardData.expiry}
+                  placeholder="MM/YY"
+                  onChange={(e) =>
+                    setCardData({
+                      ...cardData,
+                      expiry: formatExpiry(e.target.value),
+                    })
+                  }
+                  className="bg-slate-50 dark:bg-[#020617] border border-slate-200 dark:border-white/10 p-4 rounded-xl outline-none text-sm text-center font-bold"
+                />
+                <input
+                  maxLength={3}
+                  value={cardData.cvv}
+                  onChange={(e) =>
+                    setCardData({
+                      ...cardData,
+                      cvv: e.target.value.replace(/[^0-9]/g, ''),
+                    })
+                  }
+                  placeholder="CVV"
+                  className="bg-slate-50 dark:bg-[#020617] border border-slate-200 dark:border-white/10 p-4 rounded-xl outline-none text-sm text-center font-bold"
+                />
               </div>
             </div>
           </div>
         </div>
 
-        {/* SAĞ KOLON: ÖZET */}
         <div className="lg:col-span-4 space-y-6">
           <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-2xl sticky top-32 space-y-8">
             <h2 className="font-black uppercase tracking-widest text-xs text-slate-400">
@@ -241,25 +264,25 @@ export default function CheckoutPage() {
               <img
                 src={listing.imageUrls?.[0]}
                 className="w-20 h-20 rounded-2xl object-cover shadow-lg"
-                alt="Product"
               />
-              <div className="space-y-2">
-                <p className="text-xs font-black uppercase text-slate-900 dark:text-white line-clamp-2 leading-tight">
+              <div className="space-y-2 grow">
+                <p className="text-xs font-black uppercase line-clamp-2 leading-tight">
                   {isTr ? listing.titleTr : listing.titleEn}
                 </p>
                 <div className="flex items-center gap-3 bg-slate-50 dark:bg-[#020617] w-fit p-1 rounded-lg border border-slate-200 dark:border-white/10">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-1 hover:text-purple-600 transition-all cursor-pointer"
+                    className="p-1 hover:text-purple-600 cursor-pointer"
                   >
                     <Minus size={12} />
                   </button>
-                  <span className="text-[10px] font-black w-4 text-center">
-                    {quantity}
+                  <span className="text-[10px] font-black w-8 text-center">
+                    {quantity}{' '}
+                    {isRental && <Users size={10} className="inline ml-1" />}
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-1 hover:text-purple-600 transition-all cursor-pointer"
+                    className="p-1 hover:text-purple-600 cursor-pointer"
                   >
                     <Plus size={12} />
                   </button>
@@ -267,38 +290,44 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex justify-between text-xs font-bold">
-                <span className="text-slate-500 uppercase">
-                  {t('subtotal')} ({quantity})
-                </span>
-                <span className="dark:text-white font-black">
-                  {subTotal.toLocaleString()} ₺
+            <div className="space-y-4 font-bold text-xs">
+              <div className="flex justify-between uppercase text-slate-500">
+                <span>{isRental ? t('total_days') : t('quantity')}</span>
+                <span className="text-slate-900 dark:text-white">
+                  {isRental ? `${days} GÜN` : quantity}
                 </span>
               </div>
-              <div className="flex justify-between text-xs font-bold text-green-500 items-center">
-                <span className="flex items-center gap-2 uppercase tracking-widest italic text-[9px]">
-                  <Truck size={14} /> {t('free_shipping')}
-                </span>
-                <span className="font-black text-[10px]">0,00 ₺</span>
-              </div>
+              {!isRental && (
+                <div className="flex justify-between text-green-500 items-center uppercase italic text-[9px]">
+                  <span className="flex items-center gap-2">
+                    <Truck size={14} /> {t('free_shipping')}
+                  </span>
+                  <span>0,00 ₺</span>
+                </div>
+              )}
+              {isRental && (
+                <div className="flex justify-between text-purple-600 items-center uppercase italic text-[9px]">
+                  <span className="flex items-center gap-2">
+                    <CalendarDays size={14} /> {fromDate} / {toDate}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between items-end pt-6 border-t-2 border-slate-100 dark:border-white/10">
                 <span className="font-black text-slate-400 text-[10px] uppercase tracking-widest">
                   {t('total_price')}
                 </span>
-                <span className="text-3xl font-black text-slate-900 dark:text-white italic">
-                  {subTotal.toLocaleString(isTr ? 'tr-TR' : 'en-US')}{' '}
-                  <span className="text-purple-600 text-sm italic">₺</span>
+                <span className="text-3xl font-black italic">
+                  {totalPrice.toLocaleString(isTr ? 'tr-TR' : 'en-US')}{' '}
+                  <span className="text-purple-600 text-sm">₺</span>
                 </span>
               </div>
             </div>
 
-            {/* 🚀 VALIDASYON UYARISI */}
             {!isPaymentValid && cardData.name !== '' && (
-              <div className="flex items-center gap-2 text-amber-500 bg-amber-500/5 p-3 rounded-xl border border-amber-500/20 animate-in fade-in">
+              <div className="flex items-center gap-2 text-amber-500 bg-amber-500/5 p-3 rounded-xl border border-amber-500/20">
                 <AlertCircle size={14} />
                 <span className="text-[9px] font-bold uppercase">
-                  Lütfen kart bilgilerini kontrol edin
+                  Kart Bilgilerini Kontrol Edin
                 </span>
               </div>
             )}
@@ -306,18 +335,16 @@ export default function CheckoutPage() {
             <button
               onClick={handleCompleteOrder}
               disabled={!canOrder}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-3xl shadow-xl transition-all active:scale-95 uppercase tracking-widest text-[10px] disabled:opacity-20 disabled:grayscale disabled:cursor-not-allowed flex items-center justify-center gap-3"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-3xl shadow-xl transition-all active:scale-95 uppercase tracking-widest text-[10px] disabled:opacity-20 disabled:grayscale cursor-pointer flex items-center justify-center gap-3"
             >
               {isOrdering ? (
                 <>
-                  {' '}
                   <Loader2 className="animate-spin" size={16} />{' '}
-                  {t('processing')}{' '}
+                  {t('processing')}
                 </>
               ) : (
                 <>
-                  {' '}
-                  <ShieldCheck size={18} /> {t('complete_order')}{' '}
+                  <ShieldCheck size={18} /> {t('complete_order')}
                 </>
               )}
             </button>
@@ -327,26 +354,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-
-// 🚀 Helper Component (Eksik ikon hatası için)
-const CheckCircle2 = ({
-  size,
-  className,
-}: {
-  size: number;
-  className: string;
-}) => (
-  <svg
-    width={size}
-    height={size}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="3"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-  >
-    <path d="M20 6 9 17l-5-5" />
-  </svg>
-);

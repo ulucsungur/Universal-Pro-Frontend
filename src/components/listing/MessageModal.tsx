@@ -39,9 +39,10 @@ export const MessageModal = ({
         setSent(false);
         setContent('');
       }, 2000);
-    } catch (err) {
-      console.error(err);
-      alert('Mesaj gönderilemedi.');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.error || 'Mesaj iletilemedi.';
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }

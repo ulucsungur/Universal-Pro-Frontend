@@ -8,6 +8,7 @@ import { tr, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import 'react-day-picker/dist/style.css';
+import { useNavigate } from 'react-router-dom';
 
 // 🚀 API'den gelecek verinin tipini tanımladık (any hatasını bitirir)
 interface BookedDateResponse {
@@ -26,6 +27,7 @@ export const BookingCalendar = ({
   dailyPrice,
   currency,
 }: BookingCalendarProps) => {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const [range, setRange] = useState<DateRange | undefined>();
   const [bookedDates, setBookedDates] = useState<{ from: Date; to: Date }[]>(
@@ -55,6 +57,15 @@ export const BookingCalendar = ({
   const days =
     range?.from && range?.to ? differenceInDays(range.to, range.from) : 0;
   const totalPrice = days * dailyPrice;
+
+  const handleRentClick = () => {
+    if (range?.from && range?.to) {
+      // 🚀 TARİHLERİ URL'E MÜHÜRLE: /checkout/3?from=2026-02-09&to=2026-02-12
+      const fromStr = range.from.toISOString().split('T')[0];
+      const toStr = range.to.toISOString().split('T')[0];
+      navigate(`/checkout/${listingId}?from=${fromStr}&to=${toStr}`);
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-[#0f172a] p-6 rounded-4xl border border-slate-200 dark:border-white/5 shadow-2xl space-y-6 transition-colors duration-500">
@@ -89,7 +100,10 @@ export const BookingCalendar = ({
               <span className="text-purple-600 text-sm ml-2">{currency}</span>
             </span>
           </div>
-          <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-purple-600/20 uppercase tracking-[0.2em] text-[10px] active:scale-95 cursor-pointer">
+          <button
+            onClick={handleRentClick} // 🚀 Bağlantı yapıldı
+            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-purple-600/20 uppercase tracking-widest text-[10px] active:scale-95 cursor-pointer"
+          >
             {t('rent_now')}
           </button>
         </div>

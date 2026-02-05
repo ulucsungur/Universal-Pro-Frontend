@@ -2,7 +2,13 @@ import { User, MessageCircle, Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { User as UserType } from '../../types/auth';
 
-export const SellerCard = ({ seller }: { seller?: UserType }) => {
+// 🚀 onMessageClick prop'u eklendi
+interface SellerCardProps {
+  seller?: UserType;
+  onMessageClick: () => void;
+}
+
+export const SellerCard = ({ seller, onMessageClick }: SellerCardProps) => {
   const { t } = useTranslation();
   if (!seller) return null;
 
@@ -34,7 +40,10 @@ export const SellerCard = ({ seller }: { seller?: UserType }) => {
         <button className="w-full bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-900 dark:text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest border border-slate-200 dark:border-white/5 cursor-pointer">
           <Phone size={14} className="text-green-500" /> 0 (555) --- -- --
         </button>
-        <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest shadow-lg shadow-purple-600/20 cursor-pointer active:scale-95">
+        <button
+          onClick={onMessageClick}
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-4 rounded-2xl transition-all flex items-center justify-center gap-3 text-[10px] uppercase tracking-widest shadow-lg shadow-purple-600/20 cursor-pointer active:scale-95"
+        >
           <MessageCircle size={14} /> {t('send_message')}
         </button>
       </div>

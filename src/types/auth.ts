@@ -41,6 +41,10 @@ export interface Listing {
   isDaily: 'true' | 'false';
   stock: number;
   createdAt: string;
+
+  latitude?: string | number;
+  longitude?: string | number;
+  addressText?: string;
 }
 
 export interface AuthContextType {
@@ -104,4 +108,20 @@ export interface Message {
   sender?: User;
   receiver?: User;
   listing?: Listing;
+}
+// frontend/src/types/auth.ts dosyasının en altına ekleyin:
+
+export interface Booking {
+  id: number;
+  listingId: number;
+  customerId: number;
+  startDate: string; // Backend'den ISO string olarak gelir
+  endDate: string; // Backend'den ISO string olarak gelir
+  totalPrice: string;
+  status: 'confirmed' | 'cancelled';
+  createdAt: string;
+
+  // 🚀 İLİŞKİSEL VERİ (with: { listing: true })
+  listing?: Listing;
+  customer?: User;
 }

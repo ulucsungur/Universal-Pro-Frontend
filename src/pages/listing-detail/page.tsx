@@ -1,25 +1,30 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // 🚀 useNavigate eklendi
-import axios from 'axios'; // 🚀 AxiosError eklendi
-import { ImageOff, Loader2 } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { ImageOff, Loader2, MapPin } from 'lucide-react';
 import type { Listing } from '../../types/auth';
 import { useTranslation } from 'react-i18next';
 import { SpecsTable } from '../../components/listing/SpecsTable';
 import { SellerCard } from '../../components/listing/SellerCard';
-import { BookingCalendar } from '../../components/listing/BookingCalendar';
-import { useAuth } from '../../hooks/useAuth'; // 🚀 useAuth eklendi
+import { BookingCalendar } from '../../components/listing/BookingCalendar'; // 🚀 Geri geldi!
 import { MessageModal } from '../../components/listing/MessageModal';
+import { ListingMap } from '../../components/listing/ListingMap';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function ListingDetailPage() {
   const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate(); // 🚀 Cihaz başlatıldı
-  const { user } = useAuth(); // 🚀 Kullanıcı kontrolü için
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [activeImage, setActiveImage] = useState<string>('');
-  const isTr = i18n.language.startsWith('tr');
   const [isMsgOpen, setIsMsgOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<'details' | 'location' | 'specs'>(
+    'details',
+  );
+
+  const isTr = i18n.language.startsWith('tr');
 
   useEffect(() => {
     if (id) {
@@ -35,17 +40,15 @@ export default function ListingDetailPage() {
     }
   }, [id]);
 
-  // 🚀 SATIN ALMA FONKSİYONU (Hatalardan arındırıldı)
+  // 🚀 SAHİPLİK KONTROLÜ
+  const isOwner = user && listing && user.id === listing.sellerId;
+
   const handleBuyNow = () => {
-    // 1. Giriş kontrolü (Zorunlu)
     if (!user) {
       alert(t('login_required') || 'Lütfen önce giriş yapın');
       navigate('/login');
       return;
     }
-
-    // 🚀 KESİN ÇÖZÜM: Buradan direkt API'ye gitmiyoruz.
-    // Kullanıcıyı elindeki ürünle beraber Kasa (Checkout) sayfasına fırlatıyoruz.
     navigate(`/checkout/${listing?.id}`);
   };
 
@@ -69,8 +72,8 @@ export default function ListingDetailPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-white p-6 md:p-12 lg:p-20 transition-colors duration-500">
       <div className="max-w-350 mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 animate-in fade-in duration-700">
-        {/* SOL KOLON: GALERİ VE AÇIKLAMA */}
-        <div className="lg:col-span-8 space-y-12">
+        {/* SOL KOLON: GALERİ VE SEKMELİ İÇERİK */}
+        <div className="lg:col-span-8 space-y-10">
           <div className="space-y-6">
             <div className="aspect-16/10 bg-white dark:bg-[#0f172a] rounded-4xl border border-slate-200 dark:border-white/5 overflow-hidden shadow-2xl relative">
               {activeImage ? (
@@ -106,17 +109,73 @@ export default function ListingDetailPage() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#0f172a] p-10 rounded-4xl border border-slate-200 dark:border-white/5 shadow-xl">
-            <h3 className="text-[10px] font-black text-purple-500 uppercase tracking-[0.4em] mb-8 underline decoration-2 underline-offset-8 italic">
-              {t('description_title')}
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm whitespace-pre-wrap font-medium">
-              {displayDescription}
-            </p>
+          {/* TAB NAVİGASYONU */}
+          <div className="flex gap-2 border-b border-slate-200 dark:border-white/5">
+            {(['details', 'location', 'specs'] as const).map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-8 py-4 text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer border-b-2 ${activeTab === tab ? 'border-purple-600 text-purple-600 bg-purple-600/5' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+              >
+                {t(`tab_${tab}`)}
+              </button>
+            ))}
+          </div>
+
+          {/* SEKMELİ PANEL */}
+          <div className="bg-white dark:bg-[#0f172a] p-10 rounded-b-4xl rounded-tr-4xl border border-slate-200 dark:border-white/5 shadow-xl min-h-[450px]">
+            {activeTab === 'details' && (
+              <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-6">
+                <h3 className="text-[10px] font-black text-purple-500 uppercase tracking-[0.4em] underline decoration-2 underline-offset-8 italic">
+                  {t('description_title')}
+                </h3>
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-sm whitespace-pre-wrap font-medium">
+                  {displayDescription}
+                </p>
+              </div>
+            )}
+            {activeTab === 'location' && (
+              <div className="animate-in fade-in zoom-in duration-500 h-full">
+                {listing.latitude && listing.longitude ? (
+                  <div className="space-y-6">
+                    <ListingMap
+                      lat={Number(listing.latitude)}
+                      lng={Number(listing.longitude)}
+                      title={displayTitle}
+                    />
+                    <div className="flex items-center gap-3 text-slate-500 bg-slate-50 dark:bg-black/20 p-4 rounded-2xl border border-slate-100 dark:border-white/5">
+                      <MapPin size={18} className="text-red-500" />
+                      <span className="text-xs font-bold uppercase tracking-widest">
+                        {listing.addressText || t('address_not_provided')}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-24 opacity-20 text-slate-500">
+                    <MapPin size={64} />
+                    <p className="font-black mt-4 uppercase tracking-widest">
+                      {t('address_not_provided')}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+            {activeTab === 'specs' && (
+              <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+                <h3 className="text-[10px] font-black text-purple-500 uppercase tracking-[0.4em] mb-8 italic">
+                  {t('tab_specs')}
+                </h3>
+                <SpecsTable
+                  specs={listing.specs}
+                  listingId={listing.id}
+                  date={listing.createdAt}
+                />
+              </div>
+            )}
           </div>
         </div>
 
-        {/* SAĞ KOLON: TİCARET VE BİLGİ */}
+        {/* SAĞ KOLON: TİCARİ BÖLÜM */}
         <div className="lg:col-span-4 space-y-6">
           <div className="space-y-4 mb-8">
             <div className="flex gap-2">
@@ -134,43 +193,52 @@ export default function ListingDetailPage() {
             </h1>
           </div>
 
-          {listing.type === 'rent' && listing.isDaily === 'true' ? (
-            /* 1. DURUM: GÜNLÜK KiRALIK (Airbnb Modu) */
+          {/* 🚀 🚀 🚀 TİCARİ MANTIK KULESİ 🚀 🚀 🚀 */}
+          {isOwner ? (
+            /* 1. DURUM: İLAN SİZİNSE */
+            <div className="bg-slate-100 dark:bg-white/5 p-8 rounded-4xl border border-slate-200 dark:border-white/5 text-center shadow-inner">
+              <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.2em]">
+                BU İLAN SİZE AİT
+              </p>
+              <p className="text-[40px] font-black text-slate-300 dark:text-slate-600 mt-2 italic">
+                {Number(listing.price).toLocaleString()} ₺
+              </p>
+            </div>
+          ) : listing.type === 'rent' && listing.isDaily === 'true' ? (
+            /* 2. DURUM: GÜNLÜK KİRALIK (Takvim Modu) */
             <BookingCalendar
               listingId={listing.id}
               dailyPrice={Number(listing.price)}
               currency={listing.currency}
             />
           ) : (
-            /* 2. DURUM: SATILIK VEYA STANDART KİRALIK */
+            /* 3. DURUM: STANDART SATIŞ/KİRALAMA */
             <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-2xl space-y-6">
               <div className="flex justify-between items-end border-b border-slate-100 dark:border-white/5 pb-6">
                 <span className="text-slate-500 font-bold uppercase text-[10px] tracking-[0.3em]">
                   {t('price')}
                 </span>
-                <span className="text-4xl font-black text-slate-900 dark:text-white">
+                <span className="text-4xl font-black text-slate-900 dark:text-white italic">
                   {Number(listing.price).toLocaleString(
                     isTr ? 'tr-TR' : 'en-US',
                   )}
-                  <span className="text-purple-600 text-xl ml-2 italic">
+                  <span className="text-purple-600 text-xl ml-2">
                     {listing.currency}
                   </span>
                 </span>
               </div>
-              {/* 🚀 AKILLI BUTON KONTROLÜ */}
+
               {listing.type === 'sale' && listing.isShippable === 'true' ? (
-                /* Ürün satılık VE kargolanabilirse (Amazon Modu) */
                 <button
                   onClick={handleBuyNow}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-2xl transition-all shadow-xl shadow-purple-600/20 uppercase text-[10px] tracking-widest cursor-pointer"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest text-[10px] cursor-pointer"
                 >
                   {t('buy_now_btn')}
                 </button>
               ) : (
-                /* Ürün kargolanamıyorsa (Araba/Ev) veya Uzun Dönem Kiralıksa */
                 <button
                   onClick={() => setIsMsgOpen(true)}
-                  className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-black py-5 rounded-2xl hover:bg-purple-600 hover:text-white transition-all uppercase text-[10px] tracking-widest cursor-pointer"
+                  className="w-full bg-slate-900 dark:bg-white text-white dark:text-black font-black py-5 rounded-2xl hover:bg-purple-600 hover:text-white transition-all active:scale-95 uppercase tracking-widest text-[10px] cursor-pointer"
                 >
                   {t('contact_seller')}
                 </button>
@@ -178,17 +246,20 @@ export default function ListingDetailPage() {
             </div>
           )}
 
-          <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-2xl">
-            <SpecsTable
-              specs={listing.specs}
-              listingId={listing.id}
-              date={listing.createdAt}
-            />
-          </div>
-
-          <SellerCard seller={listing.seller} />
+          {/* SATICI KARTI */}
+          <SellerCard
+            seller={listing.seller}
+            onMessageClick={() => {
+              if (isOwner) {
+                alert('Bu ilan size ait!');
+              } else {
+                setIsMsgOpen(true);
+              }
+            }}
+          />
         </div>
       </div>
+
       <MessageModal
         isOpen={isMsgOpen}
         onClose={() => setIsMsgOpen(false)}

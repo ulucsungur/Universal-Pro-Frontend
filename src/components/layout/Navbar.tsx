@@ -19,6 +19,7 @@ import {
   User as UserIcon,
   ChevronDown,
   MessageSquare,
+  CalendarDays,
 } from 'lucide-react';
 import { SubNavbar } from './SubNavbar';
 import { Sidedrawer } from './Sidedrawer';
@@ -169,17 +170,30 @@ export const Navbar = () => {
                         {t('nav_my_orders') || 'Siparişlerim'}
                       </Link>
                       {isAuthorized && (
-                        <Link
-                          to="/sales"
-                          onClick={() => setIsAccountOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
-                        >
-                          <BadgeDollarSign
-                            size={14}
-                            className="text-green-500"
-                          />
-                          {t('nav_my_sales') || 'Satışlarım'}
-                        </Link>
+                        <>
+                          <Link
+                            to="/sales"
+                            onClick={() => setIsAccountOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
+                          >
+                            <BadgeDollarSign
+                              size={14}
+                              className="text-green-500"
+                            />
+                            {t('nav_my_sales') || 'Satışlarım'}
+                          </Link>
+                          <Link
+                            to="/bookings"
+                            onClick={() => setIsAccountOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                          >
+                            <CalendarDays
+                              size={14}
+                              className="text-purple-500"
+                            />
+                            {t('my_bookings')}
+                          </Link>
+                        </>
                       )}
 
                       {/* MESAJLAR LİNKİ VE BİLDİRİM ROZETİ */}
