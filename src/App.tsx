@@ -15,6 +15,7 @@ import CheckoutPage from './pages/checkout/page';
 import MySalesPage from './pages/sales/page';
 import MyMessagesPage from './pages/messages/page';
 import MyBookingsPage from './pages/bookings/page';
+import EditListingPage from './pages/edit-listing/page';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
             <Route path="/admin/add-banner" element={<AddBannerPage />} />
             <Route path="/category/:slug" element={<CategoryPage />} />
             <Route path="/listing/:id" element={<ListingDetailPage />} />
+            <Route path="/listing/:id/edit" element={<EditListingPage />} />
           </Routes>
         </div>
         <Footer />

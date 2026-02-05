@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { ImageOff, Loader2, MapPin } from 'lucide-react';
 import type { Listing } from '../../types/auth';
@@ -10,6 +10,7 @@ import { BookingCalendar } from '../../components/listing/BookingCalendar'; // �
 import { MessageModal } from '../../components/listing/MessageModal';
 import { ListingMap } from '../../components/listing/ListingMap';
 import { useAuth } from '../../hooks/useAuth';
+import { Edit3 } from 'lucide-react';
 
 export default function ListingDetailPage() {
   const { t, i18n } = useTranslation();
@@ -123,7 +124,7 @@ export default function ListingDetailPage() {
           </div>
 
           {/* SEKMELİ PANEL */}
-          <div className="bg-white dark:bg-[#0f172a] p-10 rounded-b-4xl rounded-tr-4xl border border-slate-200 dark:border-white/5 shadow-xl min-h-[450px]">
+          <div className="bg-white dark:bg-[#0f172a] p-10 rounded-b-4xl rounded-tr-4xl border border-slate-200 dark:border-white/5 shadow-xl min-h-112.5">
             {activeTab === 'details' && (
               <div className="animate-in fade-in slide-in-from-left-4 duration-500 space-y-6">
                 <h3 className="text-[10px] font-black text-purple-500 uppercase tracking-[0.4em] underline decoration-2 underline-offset-8 italic">
@@ -200,6 +201,15 @@ export default function ListingDetailPage() {
               <p className="text-slate-400 font-black uppercase text-[10px] tracking-[0.2em]">
                 BU İLAN SİZE AİT
               </p>
+              {isOwner && (
+                <Link
+                  to={`/listing/${listing.id}/edit`}
+                  className="flex items-center justify-center gap-2 w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-amber-500/20 uppercase text-[10px] tracking-widest no-underline mb-4"
+                >
+                  <Edit3 size={16} />
+                  İlanı Düzenle
+                </Link>
+              )}
               <p className="text-[40px] font-black text-slate-300 dark:text-slate-600 mt-2 italic">
                 {Number(listing.price).toLocaleString()} ₺
               </p>

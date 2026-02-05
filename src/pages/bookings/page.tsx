@@ -67,7 +67,7 @@ export default function MyBookingsPage() {
                   </div>
 
                   {/* REZERVASYON DETAYI */}
-                  <div className="flex-grow space-y-3 text-center md:text-left w-full">
+                  <div className="grow space-y-3 text-center md:text-left w-full">
                     <div>
                       <span className="bg-blue-600/10 text-blue-600 text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-tighter">
                         {t('booking_id')}: #{book.id}

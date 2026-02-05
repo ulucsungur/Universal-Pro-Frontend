@@ -35,7 +35,7 @@ export interface Listing {
   seller?: User;
   isShippable: 'true' | 'false'; // 🚀 Kargo kontrolü
   category?: Category;
-
+  postCode?: string | null;
   // 🚀 TİCARET TİPLERİ
   type: 'sale' | 'rent';
   isDaily: 'true' | 'false';
@@ -45,6 +45,9 @@ export interface Listing {
   latitude?: string | number;
   longitude?: string | number;
   addressText?: string;
+  country?: string;
+  city?: string;
+  district?: string;
 }
 
 export interface AuthContextType {
