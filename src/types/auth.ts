@@ -80,12 +80,23 @@ export interface Order {
   addressId: number | null;
   quantity: number;
   totalPrice: string;
-  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled';
-  shippingStatus: 'preparing' | 'shipped' | 'delivered';
+  shippingStatus: 'preparing' | 'shipped' | 'delivered' | 'cancelled';
   createdAt: string;
   listing?: Listing; // Sipariş içindeki ürün bilgisi
   buyer?: User;
   address?: Address;
+  shippedAt?: string | null;
+  deliveredAt?: string | null;
+  canceledAt?: string | null;
+  canceledBy?: 'seller' | 'buyer' | null;
+
+  status:
+    | 'pending'
+    | 'paid'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'returned';
 }
 export interface Address {
   id: number;
@@ -127,4 +138,11 @@ export interface Booking {
   // 🚀 İLİŞKİSEL VERİ (with: { listing: true })
   listing?: Listing;
   customer?: User;
+}
+
+export interface Review {
+  id: number;
+  rating: number;
+  comment?: string;
+  createdAt: string;
 }
