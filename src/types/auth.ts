@@ -146,3 +146,18 @@ export interface Review {
   comment?: string;
   createdAt: string;
 }
+
+export interface MetricDetail {
+  count: number;
+  score: number;
+}
+
+export interface PerformanceData {
+  totalOrders: number;
+  gps: number;
+  metrics: {
+    odr: MetricDetail;
+    lsr: MetricDetail;
+    cr: MetricDetail;
+  };
+}

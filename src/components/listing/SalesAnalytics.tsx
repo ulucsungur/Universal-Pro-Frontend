@@ -48,7 +48,7 @@ export const SalesAnalytics = ({ sales }: { sales: Order[] }) => {
   }, [sales, isTr, i18n.language]);
 
   return (
-    <div className="bg-[#0f172a] rounded-[40px] border border-white/5 shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-700">
+    <div className=" bg-slate-50 dark:bg-[#020617] rounded-[40px] border border-white/5 shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-700">
       <div className="bg-purple-600 p-6 px-10 flex justify-between items-center text-white">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-white/20 rounded-2xl">
