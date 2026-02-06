@@ -1,10 +1,11 @@
 // frontend/src/types/auth.ts
+export type UserRole = 'admin' | 'agent' | 'user' | 'banned';
 
 export interface User {
   id: number;
   fullName: string;
   email: string;
-  role: 'admin' | 'agent' | 'user';
+  role: UserRole;
   avatarUrl?: string;
 }
 
@@ -59,8 +60,6 @@ export interface AuthContextType {
   unreadCount: number;
   refreshUnreadCount: () => Promise<void>;
 }
-
-export type UserRole = 'admin' | 'agent' | 'user';
 
 export interface Banner {
   id: number;

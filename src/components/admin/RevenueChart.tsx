@@ -44,7 +44,7 @@ export const RevenueChart = ({ sales }: { sales: Order[] }) => {
   }, [sales, i18n.language]);
 
   return (
-    <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-2xl h-[400px] w-full animate-in fade-in duration-1000">
+    <div className="bg-white dark:bg-[#0f172a] p-8 rounded-4xl border border-slate-200 dark:border-white/5 shadow-2xl h-100 w-full animate-in fade-in duration-1000">
       <div className="mb-6">
         <h3 className="text-xs font-black uppercase tracking-[0.3em] text-purple-600 italic">
           {t('revenue_chart_title')}

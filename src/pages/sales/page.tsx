@@ -220,7 +220,7 @@ export default function MySalesPage() {
                           </button>
                         )}
                         {order.shippingStatus === 'delivered' && (
-                          <div className="text-green-500 font-black text-[11px] uppercase bg-green-500/5 py-8 rounded-[32px] border-2 border-dashed border-green-500/20 text-center">
+                          <div className="text-green-500 font-black text-[11px] uppercase bg-green-500/5 py-8 rounded-4xl border-2 border-dashed border-green-500/20 text-center">
                             <CheckCircle size={24} className="inline mb-2" />
                             <br />
                             {t('status_delivered')}
