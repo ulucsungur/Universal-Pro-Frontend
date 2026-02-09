@@ -239,6 +239,8 @@ i18n
           action_unban: 'ENGELİ KALDIR',
           role_banned: 'ENGELLENDİ',
           user_since: 'Üyelik Tarihi',
+          manage_my_listings: 'İlanlarımı Yönet',
+          add_new_listing_menu: 'Yeni İlan Ekle',
         },
       },
       en: {
@@ -460,6 +462,8 @@ i18n
           action_unban: 'UNBAN USER',
           role_banned: 'BANNED',
           user_since: 'Member Since',
+          manage_my_listings: 'Manage My Listings',
+          add_new_listing_menu: 'Add New Listing',
         },
       },
     },

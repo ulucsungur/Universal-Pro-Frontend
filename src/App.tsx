@@ -19,6 +19,7 @@ import EditListingPage from './pages/edit-listing/page';
 import AdminDashboardPage from './pages/admin/dashboard/page';
 import CartPage from './pages/charts/page';
 import FavoritesPage from './pages/favorites/page';
+import MyListingsPage from './pages/my-listings/page';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             <Route path="/bookings" element={<MyBookingsPage />} />
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/messages" element={<MyMessagesPage />} />
+            <Route path="/my-listings" element={<MyListingsPage />} />
             <Route path="/profile/addresses" element={<MyAddressesPage />} />
             <Route path="/checkout/:id?" element={<CheckoutPage />} />
             <Route path="/admin/add-banner" element={<AddBannerPage />} />

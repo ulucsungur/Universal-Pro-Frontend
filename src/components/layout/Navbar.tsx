@@ -22,6 +22,7 @@ import {
   CalendarDays,
   ShoppingCart,
   Heart,
+  LayoutGrid,
 } from 'lucide-react';
 import { SubNavbar } from './SubNavbar';
 import { Sidedrawer } from './Sidedrawer';
@@ -224,6 +225,33 @@ export const Navbar = () => {
                             />
                             {t('my_bookings')}
                           </Link>
+                          {/* İLANLARIMI YÖNET BUTONU */}
+                          <Link
+                            to="/my-listings"
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                          >
+                            <LayoutGrid
+                              size={18}
+                              className="text-indigo-500 group-hover:scale-110 transition-transform"
+                            />
+                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-200 group-hover:text-white transition-colors">
+                              {t('manage_my_listings')}
+                            </span>
+                          </Link>
+
+                          {/* ADD NEW LISTING - Diğerleriyle Tam Uyumlu */}
+                          <Link
+                            to="/add-listing"
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                          >
+                            <PlusCircle
+                              size={18}
+                              className="text-emerald-500 group-hover:scale-110 transition-transform"
+                            />
+                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-200 group-hover:text-white transition-colors">
+                              {t('add_new_listing_menu')}
+                            </span>
+                          </Link>
                         </>
                       )}
 
@@ -247,6 +275,9 @@ export const Navbar = () => {
                         )}
                       </Link>
 
+                      <div className="h-px bg-white my-2 mx-6" />
+
+                      {/* adreslerim */}
                       <Link
                         to="/profile/addresses"
                         onClick={() => setIsAccountOpen(false)}
