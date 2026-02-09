@@ -10,13 +10,13 @@ import { BookingCalendar } from '../../components/listing/BookingCalendar'; // �
 import { MessageModal } from '../../components/listing/MessageModal';
 import { ListingMap } from '../../components/listing/ListingMap';
 import { useAuth } from '../../hooks/useAuth';
-import { Edit3 } from 'lucide-react';
+import { Edit3, Heart, ShoppingCart } from 'lucide-react';
 
 export default function ListingDetailPage() {
   const { t, i18n } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, favorites, refreshFavorites, refreshCart } = useAuth();
 
   const [listing, setListing] = useState<Listing | null>(null);
   const [activeImage, setActiveImage] = useState<string>('');
@@ -26,6 +26,33 @@ export default function ListingDetailPage() {
   );
 
   const isTr = i18n.language.startsWith('tr');
+  const isFavorite = favorites.includes(Number(id));
+
+  const handleToggleFavorite = async () => {
+    if (!user) return alert('Lütfen giriş yapın');
+    try {
+      await axios.post('http://localhost:5000/api/favorites/toggle', {
+        listingId: Number(id),
+      });
+      await refreshFavorites();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!user) return alert('Lütfen giriş yapın');
+    try {
+      await axios.post('http://localhost:5000/api/cart', {
+        listingId: Number(id),
+        quantity: 1,
+      });
+      await refreshCart(); // Navbar'daki sayı anında güncellenir
+      alert('Ürün sepete eklendi!');
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
     if (id) {
@@ -239,12 +266,36 @@ export default function ListingDetailPage() {
               </div>
 
               {listing.type === 'sale' && listing.isShippable === 'true' ? (
-                <button
-                  onClick={handleBuyNow}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest text-[10px] cursor-pointer"
-                >
-                  {t('buy_now_btn')}
-                </button>
+                <div className="flex gap-4 mt-6">
+                  {/* SEPETE EKLE */}
+                  <button
+                    onClick={handleAddToCart}
+                    className="flex-1 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-900 dark:text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 transition-all"
+                  >
+                    <ShoppingCart size={16} />
+                  </button>
+                  {/* FAVORİYE EKLE */}
+                  <button
+                    onClick={handleToggleFavorite}
+                    className={`p-4 rounded-2xl border transition-all ${
+                      isFavorite
+                        ? 'bg-red-500/10 border-red-500 text-red-500'
+                        : 'bg-slate-100 dark:bg-white/5 border-transparent text-slate-400'
+                    }`}
+                  >
+                    <Heart
+                      size={20}
+                      fill={isFavorite ? 'currentColor' : 'none'}
+                    />
+                  </button>
+                  {/* HEMEN AL */}
+                  <button
+                    onClick={handleBuyNow}
+                    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest text-[10px] cursor-pointer"
+                  >
+                    {t('buy_now_btn')}
+                  </button>
+                </div>
               ) : (
                 <button
                   onClick={() => setIsMsgOpen(true)}

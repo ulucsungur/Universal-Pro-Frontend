@@ -17,6 +17,8 @@ import MyMessagesPage from './pages/messages/page';
 import MyBookingsPage from './pages/bookings/page';
 import EditListingPage from './pages/edit-listing/page';
 import AdminDashboardPage from './pages/admin/dashboard/page';
+import CartPage from './pages/charts/page';
+import FavoritesPage from './pages/favorites/page';
 
 function App() {
   return (
@@ -31,12 +33,14 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/add-listing" element={<AddListingPage />} />
             <Route path="/admin/add-category" element={<AddCategoryPage />} />
+            <Route path="/cart" element={<CartPage />} />
             <Route path="/orders" element={<MyOrdersPage />} />
             <Route path="/sales" element={<MySalesPage />} />
             <Route path="/bookings" element={<MyBookingsPage />} />
+            <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/messages" element={<MyMessagesPage />} />
             <Route path="/profile/addresses" element={<MyAddressesPage />} />
-            <Route path="/checkout/:id" element={<CheckoutPage />} />
+            <Route path="/checkout/:id?" element={<CheckoutPage />} />
             <Route path="/admin/add-banner" element={<AddBannerPage />} />
             <Route path="/dashboard" element={<AdminDashboardPage />} />
             <Route path="/category/:slug" element={<CategoryPage />} />

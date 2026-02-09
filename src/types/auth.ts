@@ -56,9 +56,12 @@ export interface AuthContextType {
   loading: boolean;
   login: (email: string, pass: string) => Promise<void>;
   logout: () => Promise<void>;
-  // 🚀 YENİ EKLENENLER
   unreadCount: number;
   refreshUnreadCount: () => Promise<void>;
+  cartCount: number;
+  refreshCart: () => Promise<void>;
+  favorites: number[];
+  refreshFavorites: () => Promise<void>;
 }
 
 export interface Banner {
@@ -122,7 +125,6 @@ export interface Message {
   receiver?: User;
   listing?: Listing;
 }
-// frontend/src/types/auth.ts dosyasının en altına ekleyin:
 
 export interface Booking {
   id: number;
@@ -159,4 +161,16 @@ export interface PerformanceData {
     lsr: MetricDetail;
     cr: MetricDetail;
   };
+}
+export interface CartItem {
+  id: number;
+  listingId: number;
+  quantity: number;
+  listing?: Listing; // Ürün detayları
+}
+
+export interface Favorite {
+  id: number;
+  listingId: number;
+  listing?: Listing;
 }

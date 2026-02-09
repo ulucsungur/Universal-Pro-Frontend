@@ -20,6 +20,8 @@ import {
   ChevronDown,
   MessageSquare,
   CalendarDays,
+  ShoppingCart,
+  Heart,
 } from 'lucide-react';
 import { SubNavbar } from './SubNavbar';
 import { Sidedrawer } from './Sidedrawer';
@@ -30,7 +32,7 @@ export const Navbar = () => {
   const [isAccountOpen, setIsAccountOpen] = useState(false);
 
   // 🚀 MERKEZİ VERİLER (unreadCount artık buradan tek kanalla geliyor)
-  const { user, logout, unreadCount } = useAuth();
+  const { user, logout, unreadCount, cartCount, favorites } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { t, i18n } = useTranslation();
 
@@ -52,7 +54,36 @@ export const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-3 md:gap-6">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
+            {/* FAVORİLER (Kalp İkonu Kullanıldı ✅) */}
+            <Link
+              to="/favorites"
+              className="relative p-2.5 bg-white/5 border border-white/5 rounded-xl text-slate-400 hover:text-red-500 transition-all no-underline"
+            >
+              <Heart
+                size={18}
+                fill={favorites.length > 0 ? 'currentColor' : 'none'}
+                className={favorites.length > 0 ? 'text-red-500' : ''}
+              />
+              {favorites.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full">
+                  {favorites.length}
+                </span>
+              )}
+            </Link>
+
+            {/* SEPET */}
+            <Link
+              to="/cart"
+              className="relative p-2.5 bg-white/5 border border-white/5 rounded-xl text-slate-400 hover:text-purple-500 transition-all no-underline"
+            >
+              <ShoppingCart size={18} />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-[#020617] animate-in zoom-in">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
             <button
               onClick={toggleLanguage}
               className="text-[10px] font-black uppercase text-white/40 hover:text-white transition-all px-3 py-2 border border-white/5 rounded-xl cursor-pointer"

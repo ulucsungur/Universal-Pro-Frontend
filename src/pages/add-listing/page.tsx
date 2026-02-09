@@ -312,7 +312,7 @@ export default function AddListingPage() {
                     </button>
                   )}
                 </div>
-                <div className="flex flex-wrap items-center gap-2 bg-slate-50 dark:bg-[#020617] p-4 rounded-2xl border border-slate-200 dark:border-white/5 min-h-[60px]">
+                <div className="flex flex-wrap items-center gap-2 bg-slate-50 dark:bg-[#020617] p-4 rounded-2xl border border-slate-200 dark:border-white/5 min-h-15">
                   <span className="text-[10px] font-bold text-slate-400 uppercase">
                     Market
                   </span>
