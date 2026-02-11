@@ -241,6 +241,7 @@ i18n
           user_since: 'Üyelik Tarihi',
           manage_my_listings: 'İlanlarımı Yönet',
           add_new_listing_menu: 'Yeni İlan Ekle',
+          agent_performance_comparison: 'ACENTE PERFORMANS KARŞILAŞTIRMASI',
         },
       },
       en: {
@@ -464,6 +465,7 @@ i18n
           user_since: 'Member Since',
           manage_my_listings: 'Manage My Listings',
           add_new_listing_menu: 'Add New Listing',
+          agent_performance_comparison: 'AGENT PERFORMANCE COMPARISON',
         },
       },
     },

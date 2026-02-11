@@ -1,5 +1,3 @@
-// frontend/src/components/admin/AgentComparison.tsx
-
 import {
   BarChart,
   Bar,
@@ -12,16 +10,47 @@ import {
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { Info } from 'lucide-react';
-import type { AgentPerformance } from '../../types/admin';
 
-export const AgentComparison = ({ data }: { data: AgentPerformance[] }) => {
+// 🚀 TİPLEME: Backend'den gelen veriye tam uyumlu hale getirildi
+interface AgentMetricDetail {
+  count: number;
+  score: number | string;
+}
+
+interface AgentPerformanceItem {
+  agent: {
+    fullName: string;
+    avatarUrl?: string | null;
+  };
+  metrics: {
+    odr: AgentMetricDetail;
+    lsr: AgentMetricDetail;
+    cr: AgentMetricDetail;
+  };
+  gps: number;
+  totalRevenue: number;
+}
+
+// Props tipini burada mühürledik ✅
+export const AgentComparison = ({ data }: { data: AgentPerformanceItem[] }) => {
   const { t } = useTranslation();
 
+  // 🚀 FLAT DATA MAPLEME
+  // parseFloat kullanıyoruz çünkü backend'den score bazen string gelebilir
   const chartData = data.map((item) => ({
     name: item.agent.fullName,
-    ODR: item.metrics.odr.score,
-    LSR: item.metrics.lsr.score,
-    CR: item.metrics.cr.score,
+    ODR:
+      typeof item.metrics.odr.score === 'string'
+        ? parseFloat(item.metrics.odr.score)
+        : item.metrics.odr.score,
+    LSR:
+      typeof item.metrics.lsr.score === 'string'
+        ? parseFloat(item.metrics.lsr.score)
+        : item.metrics.lsr.score,
+    CR:
+      typeof item.metrics.cr.score === 'string'
+        ? parseFloat(item.metrics.cr.score)
+        : item.metrics.cr.score,
   }));
 
   return (
@@ -29,10 +58,11 @@ export const AgentComparison = ({ data }: { data: AgentPerformance[] }) => {
       <div className="mb-8 flex justify-between items-start">
         <div>
           <h3 className="text-sm font-black uppercase tracking-widest text-purple-600 italic">
-            {t('agent_performance_comparison')}
+            {t('agent_performance_comparison') ||
+              'ACENTE PERFORMANS KIYASLAMASI'}
           </h3>
           <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
-            {t('metrics_analysis')}
+            {t('metrics_analysis') || 'HATA ORANLARINA GÖRE ANALİZ'}
           </p>
         </div>
         <div className="p-3 bg-purple-600/10 rounded-2xl text-purple-600">
@@ -40,8 +70,8 @@ export const AgentComparison = ({ data }: { data: AgentPerformance[] }) => {
         </div>
       </div>
 
-      {/* 🚀 HATA ÇÖZÜMÜ: h-[350px] kullanarak sabit yükseklik verdik */}
-      <div className="h-87.5w-full min-h-75">
+      {/* 🚀 Konsol Hatası Çözümü: Sabit yükseklik ve konteyner kontrolü */}
+      <div className="h-87.5 w-full min-h-75">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartData}
@@ -57,7 +87,8 @@ export const AgentComparison = ({ data }: { data: AgentPerformance[] }) => {
               dataKey="name"
               axisLine={false}
               tickLine={false}
-              tick={{ fontSize: 10, fontWeight: 'bold', fill: '#888' }}
+              tick={{ fontSize: 10, fontWeight: 'bold', fill: '#64748b' }}
+              dy={10}
             />
             <YAxis domain={[0, 100]} hide />
             <Tooltip
@@ -98,10 +129,46 @@ export const AgentComparison = ({ data }: { data: AgentPerformance[] }) => {
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+      {/* Metrik Açıklama Paneli Alt Kısım (Hizalama ve Tasarım Korundu) */}
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-slate-100 dark:border-white/5">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#a855f7]" />
+            <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">
+              ODR
+            </span>
+          </div>
+          <p className="text-[11px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
+            {t('odr_desc')}
+          </p>
+        </div>
+        <div className="space-y-2 border-x border-slate-100 dark:border-white/5 px-0 md:px-6">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#3b82f6]" />
+            <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">
+              LSR
+            </span>
+          </div>
+          <p className="text-[11px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
+            {t('lsr_desc')}
+          </p>
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-[#ef4444]" />
+            <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">
+              CR
+            </span>
+          </div>
+          <p className="text-[11px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
+            {t('cr_desc')}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
-
 // import {
 //   BarChart,
 //   Bar,

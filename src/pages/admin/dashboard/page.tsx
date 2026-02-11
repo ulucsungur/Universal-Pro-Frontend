@@ -12,8 +12,11 @@ import { FinanceView } from '../../../components/admin/FinanceView';
 import { AgentsView } from '../../../components/admin/AgentsView';
 import { RBACView } from '../../../components/admin/RBACView';
 import type { AdminGlobalStats, User } from '../../../types/admin';
+import { useRef } from 'react';
+import { ReportGenerator } from '../../../components/admin/ReportGenerator';
 
 export default function AdminDashboardPage() {
+  const reportAreaRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'finance' | 'agents' | 'rbac'>(
     'finance',
@@ -78,13 +81,16 @@ export default function AdminDashboardPage() {
           >
             <Users2 size={16} /> {t('rbac') || 'YETKİLER'}
           </button>
+          <ReportGenerator stats={stats} contentRef={reportAreaRef} />
         </nav>
       </aside>
 
       {/* DİNAMİK ALAN */}
       <main className="flex-1 p-8 md:p-12 overflow-y-auto no-scrollbar">
-        {activeTab === 'finance' && <FinanceView stats={stats} />}
-        {activeTab === 'agents' && <AgentsView />}
+        <div ref={reportAreaRef} className="space-y-12">
+          {activeTab === 'finance' && <FinanceView stats={stats} />}
+          {activeTab === 'agents' && <AgentsView />}
+        </div>
         {activeTab === 'rbac' && (
           <RBACView users={usersList} refresh={fetchData} />
         )}
