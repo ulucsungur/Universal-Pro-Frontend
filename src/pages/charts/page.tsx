@@ -116,7 +116,7 @@ export default function CartPage() {
                   <img
                     src={
                       item.listing.imageUrls?.[0] ||
-                      'https://via.placeholder.com/150'
+                      'placehold.com/400x300?text=No+Image'
                     }
                     className="w-24 h-24 rounded-2xl object-cover"
                     alt={item.listing.title}

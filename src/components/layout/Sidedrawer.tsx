@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { X, ChevronRight, ArrowLeft, User } from 'lucide-react';
+import { X, ChevronRight, ArrowLeft, User, BookText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../hooks/useAuth';
 import type { Category } from '../../types/auth';
@@ -56,12 +56,12 @@ export const Sidedrawer = ({ isOpen, onClose }: SidedrawerProps) => {
   return (
     <>
       <div
-        className={`fixed inset-0 bg-black/60 z-[100] transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/60 z-100 transition-opacity duration-500 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={handleClose}
       />
 
       <div
-        className={`fixed top-0 left-0 h-full w-[350px] bg-[#020617] z-[101] shadow-2xl transition-transform duration-500 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`fixed top-0 left-0 h-full w-87.5 bg-[#020617] z-101 shadow-2xl transition-transform duration-500 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* ÜST KISIM */}
         <div className="h-40 bg-[#0f172a] border-b border-white/5 p-8 flex flex-col justify-end relative">
@@ -131,17 +131,38 @@ export const Sidedrawer = ({ isOpen, onClose }: SidedrawerProps) => {
                     />
                   </div>
                 ) : (
-                  /* 🚀 Alt kategorisi yoksa: Gerçek link */
-                  <Link
-                    to={`/category/${cat.slug}`}
-                    onClick={handleClose}
-                    className="block px-4 py-4 text-sm font-bold text-white uppercase tracking-widest hover:bg-white/5 rounded-2xl no-underline transition-all"
-                  >
-                    {isTr ? cat.titleTr : cat.titleEn}
-                  </Link>
+                  <>
+                    <Link
+                      to={`/category/${cat.slug}`}
+                      onClick={handleClose}
+                      className="block px-4 py-4 text-sm font-bold text-white uppercase tracking-widest hover:bg-white/5 rounded-2xl no-underline transition-all"
+                    >
+                      {isTr ? cat.titleTr : cat.titleEn}
+                    </Link>
+                  </>
                 )}
               </div>
             ))}
+          </div>
+          <div className="mt-6 pt-6 border-t border-white/5">
+            <p className="px-6 text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] mb-2 italic">
+              {t('explore') || 'Keşfet'}
+            </p>
+            <Link
+              to="/blogs"
+              onClick={onClose} // Sayfaya gidince drawer kapansın
+              className="flex items-center gap-4 px-6 py-4 text-slate-400 hover:bg-purple-600 hover:text-white transition-all no-underline group"
+            >
+              <div className="p-2 bg-purple-600/10 rounded-lg group-hover:bg-white/20 transition-all">
+                <BookText
+                  size={18}
+                  className="text-purple-600 group-hover:text-white"
+                />
+              </div>
+              <span className="text-xs font-black uppercase tracking-widest">
+                {t('blogs') || 'BLOGS'}
+              </span>
+            </Link>
           </div>
         </div>
       </div>

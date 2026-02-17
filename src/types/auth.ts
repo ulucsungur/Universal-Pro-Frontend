@@ -174,3 +174,18 @@ export interface Favorite {
   listingId: number;
   listing?: Listing;
 }
+
+export interface Blog {
+  id: number;
+  title: string;
+  content: string;
+  imageUrl?: string;
+  categoryId?: number;
+  authorId: number;
+  isPrivate: 'true' | 'false';
+  createdAt: string;
+  updatedAt: string;
+  author?: User; // İlişkisel veri
+  category?: Category; // İlişkisel veri
+  viewCount: number;
+}

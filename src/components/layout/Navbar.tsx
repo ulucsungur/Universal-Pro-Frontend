@@ -23,6 +23,8 @@ import {
   ShoppingCart,
   Heart,
   LayoutGrid,
+  BookOpenCheck,
+  PenTool,
 } from 'lucide-react';
 import { SubNavbar } from './SubNavbar';
 import { Sidedrawer } from './Sidedrawer';
@@ -165,7 +167,6 @@ export const Navbar = () => {
                   className={`text-slate-600 transition-transform duration-300 ${isAccountOpen ? 'rotate-180' : ''}`}
                 />
               </button>
-
               {isAccountOpen && (
                 <>
                   <div
@@ -173,98 +174,127 @@ export const Navbar = () => {
                     onClick={() => setIsAccountOpen(false)}
                   />
                   <div className="absolute top-14 right-0 w-64 bg-[#0f172a] border border-white/5 rounded-3xl shadow-2xl p-2 z-20 animate-in fade-in zoom-in-95 duration-200">
+                    {/* KULLANICI BİLGİSİ */}
                     <div className="p-4 border-b border-white/5 mb-2">
                       <p className="text-[9px] font-black text-slate-500 uppercase mb-1 italic tracking-widest">
-                        Giriş Yapıldı
+                        {t('logged_in_as') || 'Giriş Yapıldı'}
                       </p>
                       <p className="text-xs font-bold text-white truncate">
                         {user.email}
                       </p>
                     </div>
 
-                    <div className="space-y-1">
+                    <div className="space-y-0.5">
+                      {/* PANELİM (ADMIN) */}
                       {isAuthorized && (
                         <Link
                           to="/dashboard"
                           onClick={() => setIsAccountOpen(false)}
-                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all uppercase no-underline"
+                          className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-amber-500 hover:bg-amber-500/10 rounded-xl transition-all uppercase tracking-widest no-underline"
                         >
-                          <LayoutDashboard size={14} />
-                          {t('nav_dashboard') || 'Panelim'}
+                          <LayoutDashboard size={16} />
+                          {t('nav_dashboard') || 'Panelim (Admin)'}
                         </Link>
                       )}
+
+                      {/* SİPARİŞLERİM */}
                       <Link
                         to="/orders"
                         onClick={() => setIsAccountOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
+                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
                       >
-                        <Package size={14} className="text-blue-500" />
+                        <Package size={16} className="text-blue-500" />
                         {t('nav_my_orders') || 'Siparişlerim'}
                       </Link>
+
                       {isAuthorized && (
                         <>
+                          {/* SATIŞLARIM */}
                           <Link
                             to="/sales"
                             onClick={() => setIsAccountOpen(false)}
-                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
                           >
                             <BadgeDollarSign
-                              size={14}
+                              size={16}
                               className="text-green-500"
                             />
-                            {t('nav_my_sales') || 'Satışlarım'}
+                            {t('nav_my_sales') || 'Satışlarım (Gelen)'}
                           </Link>
+
+                          {/* KİRALAMALARIM */}
                           <Link
                             to="/bookings"
                             onClick={() => setIsAccountOpen(false)}
                             className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
                           >
                             <CalendarDays
-                              size={14}
+                              size={16}
                               className="text-purple-500"
                             />
-                            {t('my_bookings')}
-                          </Link>
-                          {/* İLANLARIMI YÖNET BUTONU */}
-                          <Link
-                            to="/my-listings"
-                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
-                          >
-                            <LayoutGrid
-                              size={18}
-                              className="text-indigo-500 group-hover:scale-110 transition-transform"
-                            />
-                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-200 group-hover:text-white transition-colors">
-                              {t('manage_my_listings')}
-                            </span>
+                            {t('my_bookings') || 'Kiralamalarım'}
                           </Link>
 
-                          {/* ADD NEW LISTING - Diğerleriyle Tam Uyumlu */}
+                          {/* İLANLARIMI YÖNET */}
+                          <Link
+                            to="/my-listings"
+                            onClick={() => setIsAccountOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                          >
+                            <LayoutGrid size={16} className="text-indigo-500" />
+                            {t('manage_my_listings') || 'İlanlarımı Yönet'}
+                          </Link>
+
+                          {/* YENİ İLAN EKLE */}
                           <Link
                             to="/add-listing"
+                            onClick={() => setIsAccountOpen(false)}
                             className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
                           >
                             <PlusCircle
-                              size={18}
-                              className="text-emerald-500 group-hover:scale-110 transition-transform"
+                              size={16}
+                              className="text-emerald-500"
                             />
-                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-200 group-hover:text-white transition-colors">
-                              {t('add_new_listing_menu')}
-                            </span>
+                            {t('add_new_listing_menu') || 'Yeni İlan Ekle'}
                           </Link>
+
+                          {/* YENİ BLOG EKLE */}
+                          <Link
+                            to="/admin/add-blog"
+                            onClick={() => setIsAccountOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                          >
+                            <PenTool size={16} className="text-pink-500" />
+                            {t('add_blog_menu') || 'Yeni Blog Ekle'}
+                          </Link>
+
+                          {/* BLOGLARIMI YÖNET */}
+                          <Link
+                            to="/admin/my-blogs"
+                            onClick={() => setIsAccountOpen(false)}
+                            className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
+                          >
+                            <BookOpenCheck
+                              size={16}
+                              className="text-orange-500"
+                            />
+                            {t('manage_my_blogs') || 'Bloglarımı Yönet'}
+                          </Link>
+
+                          <div className="h-px bg-white/5 my-2 mx-4" />
                         </>
                       )}
 
-                      {/* MESAJLAR LİNKİ VE BİLDİRİM ROZETİ */}
+                      {/* MESAJLARIM */}
                       <Link
                         to="/messages"
                         onClick={() => setIsAccountOpen(false)}
-                        className="flex items-center justify-between px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
+                        className="flex items-center justify-between px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
                       >
                         <div className="flex items-center gap-3">
                           <MessageSquare
-                            size={14}
-                            className="text-purple-500"
+                            size={16}
+                            className="text-purple-400"
                           />
                           {t('nav_my_messages') || 'Mesajlarım'}
                         </div>
@@ -275,33 +305,34 @@ export const Navbar = () => {
                         )}
                       </Link>
 
-                      <div className="h-px bg-white my-2 mx-6" />
-
-                      {/* adreslerim */}
+                      {/* ADRESLERİM */}
                       <Link
                         to="/profile/addresses"
                         onClick={() => setIsAccountOpen(false)}
-                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase no-underline"
+                        className="flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all uppercase tracking-widest no-underline"
                       >
-                        <MapPin size={14} className="text-red-400" />
+                        <MapPin size={16} className="text-red-400" />
                         {t('nav_addresses') || 'Adreslerim'}
                       </Link>
 
                       <div className="h-px bg-white/5 my-2" />
 
-                      <button className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-400 hover:text-white hover:bg-white/5 rounded-xl text-left uppercase">
-                        <Settings size={14} />
-                        {t('nav_profile_settings') || 'Ayarlar'}
+                      {/* AYARLAR */}
+                      <button className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-slate-400 hover:text-white hover:bg-white/5 rounded-xl text-left uppercase tracking-widest border-none cursor-pointer">
+                        <Settings size={16} />
+                        {t('nav_profile_settings') || 'Profil Ayarları'}
                       </button>
+
+                      {/* ÇIKIŞ YAP */}
                       <button
                         onClick={() => {
                           logout();
                           setIsAccountOpen(false);
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-red-500 hover:bg-red-500/10 rounded-xl mt-1 border-t border-white/5 uppercase tracking-widest"
+                        className="w-full flex items-center gap-3 px-4 py-3 text-[10px] font-black text-red-500 hover:bg-red-500/10 rounded-xl mt-1 border-t border-white/5 uppercase tracking-widest cursor-pointer"
                       >
-                        <LogOut size={14} />
-                        {t('logout')}
+                        <LogOut size={16} />
+                        {t('logout') || 'Çıkış Yap'}
                       </button>
                     </div>
                   </div>
